@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Herramienta Solar - Cuadro de Carga y Análisis</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Plotly -->
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+    <!-- SheetJS (XLSX) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            background: #f6f7f9;
+        }
+        
+        .card {
+            border-radius: 12px;
+        }
+        
+        .small-muted {
+            color: #666;
+            font-size: .9rem;
+        }
+        /* centered alerts */
+        
+        .custom-alert {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(.98);
+            background: #fff;
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transition: all .26s ease;
+            z-index: 99999;
+            min-width: 260px;
+            text-align: left;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .custom-alert.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .custom-alert .icon {
+            font-size: 1.2rem;
+        }
+        
+        .custom-alert.success {
+            border-left: 5px solid #28a745;
+        }
+        
+        .custom-alert.error {
+            border-left: 5px solid #dc3545;
+        }
+        
+        .custom-alert.info {
+            border-left: 5px solid #0d6efd;
+        }
+        /* small table input fixes */
+        
+        table input[type="number"],
+        table input[type="text"],
+        table select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* subtle grid for quick icons (if used later) */
+        
+        .panel-electrodomesticos {
+            gap: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        /* sticky header in tables */
+        
+        thead.table-light {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-4">
+        <h1 class="text-center mb-4">⚡ Herramienta Solar - Cuadro de Carga y Análisis</h1>
+
+        <!-- Carga de datos -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h5>📂 Carga de datos</h5>
+            <p class="small-muted mb-2">
+                • Formato plantilla: hoja <strong>LINEA BASE</strong> con columnas: <code>Item, Carga, Potencia (W), 0,1,...,23</code>.<br> • Puedes descargar la plantilla, cargar un .xlsx del mismo formato o usar datos de ejemplo.
+            </p>
+
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" class="form-control">
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button id="loadBtn" class="btn btn-primary">Cargar archivo</button>
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button id="downloadTemplateBtn" class="btn btn-outline-success">📄 Descargar plantilla</button>
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button id="generateSampleBtn" class="btn btn-outline-secondary">✨ Datos de ejemplo</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingreso manual -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h5>✍️ Ingreso manual</h5>
+            <p class="small-muted mb-2">Ingresa el nombre, potencia y el intervalo de tiempo (hora de inicio y hora de fin). El sistema calculará automáticamente la duración total.</p>
+
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small mb-0">Nombre de la carga</label>
+                    <input id="manualCarga" type="text" class="form-control" placeholder="Ej: Aire acondicionado">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small mb-0">Potencia (W)</label>
+                    <input id="manualPotencia" type="number" class="form-control" placeholder="Ej: 1200">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small mb-0">Hora inicio</label>
+                    <select id="manualInicio" class="form-select"></select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small mb-0">Hora fin</label>
+                    <select id="manualFin" class="form-select"></select>
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label small mb-0">Total (h)</label>
+                    <input id="manualTotal" type="text" readonly class="form-control text-center">
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button id="addManualBtn" class="btn btn-success">Agregar</button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <!-- ========== ELECTRODOMÉSTICOS RÁPIDOS FUNCIONALES Y CONECTADOS A LA TABLA ========== -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h5>⚡ Agregar electrodomésticos rápidamente</h5>
+            <p class="small text-muted">
+                Selecciona un electrodoméstico, ajusta su potencia, cantidad y horario de uso. Al presionar ➕ se agregan directamente a la tabla de datos.
+            </p>
+
+            <div class="row g-3 mt-3">
+                <!-- Panel de electrodomésticos esenciales -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light fw-bold text-center">Electrodomésticos esenciales</div>
+                        <div class="card-body d-flex flex-wrap justify-content-around gap-3">
+                            <div class="appliance-card" data-nombre="Refrigerador" data-potencia="300">🧊<br><strong>Refrigerador</strong></div>
+                            <div class="appliance-card" data-nombre="Televisor" data-potencia="150">📺<br><strong>Televisor</strong></div>
+                            <div class="appliance-card" data-nombre="Luz LED" data-potencia="80">💡<br><strong>Luz LED</strong></div>
+                            <div class="appliance-card" data-nombre="Ventilador" data-potencia="100">🌀<br><strong>Ventilador</strong></div>
+                            <div class="appliance-card" data-nombre="Lavadora" data-potencia="500">🧺<br><strong>Lavadora</strong></div>
+                            <div class="appliance-card" data-nombre="Computador" data-potencia="200">💻<br><strong>Computador</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de alto consumo -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light fw-bold text-center">Electrodomésticos de gran consumo</div>
+                        <div class="card-body d-flex flex-wrap justify-content-around gap-3">
+                            <div class="appliance-card" data-nombre="Aire acondicionado" data-potencia="1200">❄️<br><strong>Aire acondicionado</strong></div>
+                            <div class="appliance-card" data-nombre="Horno eléctrico" data-potencia="2000">🔥<br><strong>Horno eléctrico</strong></div>
+                            <div class="appliance-card" data-nombre="Calentador de agua" data-potencia="1500">🚿<br><strong>Calentador</strong></div>
+                            <div class="appliance-card" data-nombre="Plancha" data-potencia="1000">👕<br><strong>Plancha</strong></div>
+                            <div class="appliance-card" data-nombre="Microondas" data-potencia="1200">🍲<br><strong>Microondas</strong></div>
+                            <div class="appliance-card" data-nombre="Lavavajillas" data-potencia="1800">🍽️<br><strong>Lavavajillas</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalle de configuración -->
+            <div id="detalleElectrodomestico" class="mt-4 p-3 border rounded bg-light d-none">
+                <h6 class="fw-bold mb-3">⚙️ Configuración del equipo seleccionado</h6>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" id="nombreElectro" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Potencia (W)</label>
+                        <input type="number" id="potenciaElectro" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" id="cantidadElectro" class="form-control" min="1" value="1">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Hora inicio</label>
+                        <select id="inicioElectro" class="form-select"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Hora fin</label>
+                        <select id="finElectro" class="form-select"></select>
+                    </div>
+                    <div class="col-md-1 d-grid">
+                        <button class="btn btn-success" id="agregarElectroBtn">➕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .appliance-card {
+                width: 100px;
+                height: 100px;
+                background: #f8f9fa;
+                border: 2px solid transparent;
+                border-radius: 12px;
+                text-align: center;
+                padding: 10px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+            
+            .appliance-card:hover {
+                background: #e9f5ff;
+                border-color: #007bff;
+                transform: scale(1.05);
+            }
+            
+            .appliance-card.selected {
+                background: #dbeafe;
+                border-color: #0d6efd;
+                box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
+            }
+            
+            @keyframes flash {
+                from {
+                    background-color: #d1e7dd;
+                }
+                to {
+                    background-color: transparent;
+                }
+            }
+            
+            .row-flash {
+                animation: flash 1.8s ease forwards;
+            }
+        </style>
+
+
+
+
+
+
+
+
+
+        <!-- Tabla principal -->
+        <div class="card shadow-sm p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5>📋 Tabla de datos</h5>
+                <div class="d-flex gap-2">
+                    <button id="processBtn" class="btn btn-outline-primary btn-sm">Generar métricas y gráficas</button>
+                    <button id="clearTableBtn" class="btn btn-outline-danger btn-sm">🧹 Limpiar tabla</button>
+                </div>
+            </div>
+
+            <div class="table-responsive" style="max-height: 380px; overflow-y:auto;">
+                <table id="tablaManual" class="table table-bordered table-sm align-middle text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:40px">#</th>
+                            <th>Carga</th>
+                            <th style="width:120px">Potencia (W)</th>
+                            <th style="width:120px">Hora inicio</th>
+                            <th style="width:120px">Hora fin</th>
+                            <th style="width:120px">Horas encendido</th>
+                            <th style="width:140px">Energía (kWh)</th>
+                            <th style="width:80px">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="8" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Métricas -->
+        <div class="card shadow-sm p-3 mb-4">
+            <h5 class="text-center">📊 Métricas</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Energía total: <strong id="energiaTotal">-</strong> kWh</li>
+                <li class="list-group-item">Potencia media: <strong id="potenciaMedia">-</strong> kW</li>
+                <li class="list-group-item">Potencia pico: <strong id="potenciaPico">-</strong> kW</li>
+            </ul>
+        </div>
+
+        <!-- Visualizaciones -->
+        <div class="card shadow-sm p-3 mb-5">
+            <h5 class="text-center mb-3">📈 Visualizaciones</h5>
+            <div class="mb-3">
+                <canvas id="ldcChart" style="max-height:320px;"></canvas>
+            </div>
+            <div id="heatmapDiv" style="height:380px;"></div>
+        </div>
+
+    </div>
+
+    <!-- ALERT CONTAINER handled by JS -->
+
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        /***************  Globals  *****************/
+        const datosManuales = []; // main data structure
+        let ldcChart = null;
+
+        /***************  Utilities: alert center  *****************/
+        function mostrarAlerta(mensaje, tipo = "info", tiempo = 2600) {
+            const div = document.createElement('div');
+            div.className = 'custom-alert ' + (tipo || 'info');
+            div.innerHTML = `<div class="icon">${tipo === 'success' ? '✅' : tipo === 'error' ? '⚠️' : 'ℹ️'}</div>
+                     <div style="flex:1">${mensaje}</div>`;
+            document.body.appendChild(div);
+            requestAnimationFrame(() => div.classList.add('show'));
+            setTimeout(() => {
+                div.classList.remove('show');
+                setTimeout(() => div.remove(), 300);
+            }, tiempo);
+        }
+
+        /***************  Populate hour selects  *****************/
+        const selectInicio = document.getElementById('manualInicio');
+        const selectFin = document.getElementById('manualFin');
+
+        function llenarSelectHoras() {
+            selectInicio.innerHTML = '';
+            selectFin.innerHTML = '';
+            for (let h = 0; h <= 24; h++) {
+                const label = h.toString().padStart(2, '0') + ':00';
+                const opt1 = document.createElement('option');
+                opt1.value = h;
+                opt1.textContent = label;
+                const opt2 = opt1.cloneNode(true);
+                selectInicio.appendChild(opt1);
+                selectFin.appendChild(opt2);
+            }
+            selectInicio.value = '0';
+            selectFin.value = '1';
+            document.getElementById('manualTotal').value = '1.00';
+        }
+        llenarSelectHoras();
+
+        // Update total when interval changes
+        function actualizarTotalInterfaz() {
+            const hi = parseFloat(selectInicio.value);
+            const hf = parseFloat(selectFin.value);
+            if (isNaN(hi) || isNaN(hf)) {
+                document.getElementById('manualTotal').value = '';
+                return;
+            }
+            let dur = hf - hi;
+            if (dur < 0) dur += 24;
+            // if both are 0 and hf==24 we consider 24
+            if (hi === 0 && hf === 24) dur = 24;
+            document.getElementById('manualTotal').value = dur.toFixed(2);
+        }
+        selectInicio.addEventListener('change', actualizarTotalInterfaz);
+        selectFin.addEventListener('change', actualizarTotalInterfaz);
+
+        /***************  Table helpers  *****************/
+        const tbody = document.querySelector('#tablaManual tbody');
+
+        function crearFilaTabla(itemIndex, obj) {
+            // returns <tr> element
+            const tr = document.createElement('tr');
+
+            // prepare values
+            const potencia = Number(obj.Potencia_W || 0);
+            const hi = Number(obj.HoraInicio || 0);
+            const hf = Number(obj.HoraFin || 0);
+            const dur = Number(obj.HorasEncendido || 0);
+            const ener = Number(obj.Energia_kWh || 0);
+
+            tr.innerHTML = `
+      <td>${itemIndex + 1}</td>
+      <td style="min-width:160px"><input class="form-control form-control-sm" data-field="Carga" value="${escapeHtml(String(obj.Carga||''))}"></td>
+      <td><input class="form-control form-control-sm" type="number" step="any" data-field="Potencia_W" value="${potencia}"></td>
+      <td>
+        <select class="form-select form-select-sm" data-field="HoraInicio">${buildHourOptions(hi)}</select>
+      </td>
+      <td>
+        <select class="form-select form-select-sm" data-field="HoraFin">${buildHourOptions(hf)}</select>
+      </td>
+      <td><input class="form-control form-control-sm text-center" data-field="HorasEncendido" value="${dur.toFixed(2)}" readonly></td>
+      <td><input class="form-control form-control-sm text-end" data-field="Energia_kWh" value="${ener.toFixed(3)}" readonly></td>
+      <td><button class="btn btn-sm btn-danger btn-remove">🗑</button></td>
+    `;
+
+            // attach listeners for inputs & selects
+            // text inputs
+            const inputs = tr.querySelectorAll('input[data-field], select[data-field]');
+            inputs.forEach(inp => {
+                inp.addEventListener('change', () => {
+                    // read current row values and update datosManuales
+                    const cargaVal = tr.querySelector('input[data-field="Carga"]').value.trim() || 'Sin nombre';
+                    const potVal = parseFloat(tr.querySelector('input[data-field="Potencia_W"]').value) || 0;
+                    const hiVal = parseFloat(tr.querySelector('select[data-field="HoraInicio"]').value) || 0;
+                    const hfVal = parseFloat(tr.querySelector('select[data-field="HoraFin"]').value) || 0;
+                    let durVal = hfVal - hiVal;
+                    if (durVal < 0) durVal += 24;
+                    if (hiVal === 0 && hfVal === 24) durVal = 24;
+                    const enVal = (potVal / 1000) * durVal;
+
+                    // update datosManuales by index (we must find the correct index - rely on itemIndex)
+                    datosManuales[itemIndex].Carga = cargaVal;
+                    datosManuales[itemIndex].Potencia_W = potVal;
+                    datosManuales[itemIndex].HoraInicio = hiVal;
+                    datosManuales[itemIndex].HoraFin = hfVal;
+                    datosManuales[itemIndex].HorasEncendido = Number(durVal);
+                    datosManuales[itemIndex].Energia_kWh = Number(enVal);
+
+                    // reflect in row
+                    tr.querySelector('input[data-field="HorasEncendido"]').value = durVal.toFixed(2);
+                    tr.querySelector('input[data-field="Energia_kWh"]').value = enVal.toFixed(3);
+                });
+            });
+
+            // remove button
+            tr.querySelector('.btn-remove').addEventListener('click', () => {
+                datosManuales.splice(itemIndex, 1);
+                actualizarTablaManual();
+                mostrarAlerta('Carga eliminada.', 'info');
+            });
+
+            return tr;
+        }
+
+        function buildHourOptions(selected) {
+            let s = '';
+            for (let h = 0; h <= 24; h++) {
+                const label = h.toString().padStart(2, '0') + ':00';
+                s += `<option value="${h}" ${h === Number(selected) ? 'selected' : ''}>${label}</option>`;
+            }
+            return s;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[m];
+            });
+        }
+
+        function actualizarTablaManual() {
+            tbody.innerHTML = '';
+            if (datosManuales.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="8" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+            datosManuales.forEach((d, i) => {
+                const fila = crearFilaTabla(i, d);
+                tbody.appendChild(fila);
+            });
+        }
+
+        /***************  Add manual entry  *****************/
+        document.getElementById('addManualBtn').addEventListener('click', () => {
+            const nombre = document.getElementById('manualCarga').value.trim();
+            const potencia = parseFloat(document.getElementById('manualPotencia').value);
+            const hi = parseFloat(document.getElementById('manualInicio').value);
+            const hf = parseFloat(document.getElementById('manualFin').value);
+
+            if (!nombre || isNaN(potencia) || isNaN(hi) || isNaN(hf)) {
+                mostrarAlerta('Completa todos los campos con valores válidos.', 'error');
+                return;
+            }
+
+            let dur = hf - hi;
+            if (dur < 0) dur += 24;
+            if (hi === 0 && hf === 24) dur = 24;
+            const energia = (potencia / 1000) * dur;
+
+            datosManuales.push({
+                Carga: nombre,
+                Potencia_W: Number(potencia),
+                HoraInicio: Number(hi),
+                HoraFin: Number(hf),
+                HorasEncendido: Number(dur),
+                Energia_kWh: Number(energia)
+            });
+
+            actualizarTablaManual();
+            mostrarAlerta('Carga agregada correctamente.', 'success');
+
+            // clear input fields (optional)
+            document.getElementById('manualCarga').value = '';
+            document.getElementById('manualPotencia').value = '';
+            document.getElementById('manualInicio').value = '0';
+            document.getElementById('manualFin').value = '1';
+            actualizarTotalInterfaz();
+        });
+
+        /***************  Clear table button  *****************/
+        document.getElementById('clearTableBtn').addEventListener('click', () => {
+            if (!confirm('¿Deseas limpiar la tabla y métricas?')) return;
+            datosManuales.length = 0;
+            actualizarTablaManual();
+            // clear metrics and graphs
+            document.getElementById('energiaTotal').textContent = '-';
+            document.getElementById('potenciaMedia').textContent = '-';
+            document.getElementById('potenciaPico').textContent = '-';
+            if (ldcChart) {
+                ldcChart.destroy();
+                ldcChart = null;
+            }
+            Plotly.purge('heatmapDiv');
+            mostrarAlerta('Tabla y métricas limpiadas.', 'info');
+        });
+
+        /***************  Generate sample data  *****************/
+        document.getElementById('generateSampleBtn').addEventListener('click', () => {
+            datosManuales.length = 0;
+            const ejemplos = [{
+                Carga: "Demo Luz",
+                Potencia_W: 60,
+                HoraInicio: 18,
+                HoraFin: 24
+            }, {
+                Carga: "Demo TV",
+                Potencia_W: 150,
+                HoraInicio: 20,
+                HoraFin: 23
+            }, {
+                Carga: "Demo Fridge",
+                Potencia_W: 300,
+                HoraInicio: 0,
+                HoraFin: 24
+            }];
+            ejemplos.forEach(e => {
+                let d = e.HoraFin - e.HoraInicio;
+                if (d < 0) d += 24;
+                if (e.HoraInicio === 0 && e.HoraFin === 24) d = 24;
+                datosManuales.push({
+                    Carga: e.Carga,
+                    Potencia_W: e.Potencia_W,
+                    HoraInicio: e.HoraInicio,
+                    HoraFin: e.HoraFin,
+                    HorasEncendido: d,
+                    Energia_kWh: (e.Potencia_W / 1000) * d
+                });
+            });
+            actualizarTablaManual();
+            mostrarAlerta('Datos de ejemplo cargados.', 'success');
+        });
+
+        /***************  Download template XLSX  *****************/
+        document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
+            const wb = XLSX.utils.book_new();
+            const header = ['Item', 'Carga', 'Potencia (W)'];
+            for (let h = 0; h < 24; h++) header.push(String(h));
+            const wsData = [header];
+            // 30 blank rows example
+            for (let i = 1; i <= 30; i++) {
+                const row = [i, `Carga ${i}`, '', ...Array.from({
+                    length: 24
+                }, () => 0)];
+                wsData.push(row);
+            }
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'LINEA BASE');
+            XLSX.writeFile(wb, 'Plantilla_LINEA_BASE.xlsx');
+            mostrarAlerta('Plantilla descargada: Plantilla_LINEA_BASE.xlsx', 'success');
+        });
+
+        /***************  Load file (XLSX or CSV)  *****************/
+        document.getElementById('loadBtn').addEventListener('click', async() => {
+            const inputFile = document.getElementById('fileInput');
+            const f = inputFile.files[0];
+            if (!f) {
+                mostrarAlerta('Selecciona un archivo .xlsx/.csv primero.', 'error');
+                return;
+            }
+
+            const name = f.name.toLowerCase();
+            try {
+                if (name.endsWith('.csv')) {
+                    // read CSV as text
+                    const text = await f.text();
+                    const rows = text.split(/\r\n|\n/).map(r => r.split(','));
+                    procesarMatrizComoLineaBase(rows);
+                } else {
+                    const ab = await f.arrayBuffer();
+                    const workbook = XLSX.read(ab, {
+                        type: 'array'
+                    });
+                    // prefer hoja LINEA BASE
+                    const sheetName = workbook.SheetNames.includes('LINEA BASE') ? 'LINEA BASE' : workbook.SheetNames[0];
+                    const ws = workbook.Sheets[sheetName];
+                    const rows = XLSX.utils.sheet_to_json(ws, {
+                        header: 1,
+                        raw: false
+                    });
+                    procesarMatrizComoLineaBase(rows);
+                }
+            } catch (err) {
+                console.error(err);
+                mostrarAlerta('Error leyendo archivo. Revisa formato.', 'error');
+            }
+        });
+
+        function procesarMatrizComoLineaBase(rows) {
+            // rows: array de arrays
+            // find header row (search first 8 rows)
+            let headerIndex = -1;
+            for (let i = 0; i < Math.min(8, rows.length); i++) {
+                const r = rows[i].map(c => (c || '').toString().trim().toLowerCase());
+                if (r.includes('carga') && (r.includes('potencia') || r.includes('potencia (w)'))) {
+                    headerIndex = i;
+                    break;
+                }
+            }
+            if (headerIndex === -1) headerIndex = 0;
+            const headers = (rows[headerIndex] || []).map(h => (h || '').toString().trim());
+            const idxCarga = headers.findIndex(h => /carga/i.test(h));
+            const idxPot = headers.findIndex(h => /potencia/i.test(h));
+            // detect hour columns
+            const idxHoras = [];
+            headers.forEach((h, i) => {
+                if (/^\s*(\d|1\d|2[0-3])\s*$/.test(String(h))) idxHoras.push(i);
+            });
+            // if not found, assume next 24 columns after potencia
+            if (idxHoras.length === 0 && idxPot !== -1) {
+                for (let k = idxPot + 1; k < headers.length && idxHoras.length < 24; k++) idxHoras.push(k);
+            }
+            if (idxCarga === -1 || idxPot === -1 || idxHoras.length === 0) {
+                mostrarAlerta('No se encontraron encabezados válidos (Carga/Potencia/0..23).', 'error');
+                console.warn('Encabezados detectados:', headers);
+                return;
+            }
+
+            // parse rows below headerIndex
+            const parsed = [];
+            for (let r = headerIndex + 1; r < rows.length; r++) {
+                const fila = rows[r];
+                if (!fila || fila.length === 0) continue;
+                const nombre = fila[idxCarga];
+                if (!nombre) continue;
+                // potencia: remove commas / dots issues
+                const potRaw = String(fila[idxPot] || '').replace(/\s/g, '').replace(',', '.');
+                const potencia = Number(potRaw) || 0;
+                // count hours
+                let horasEncendido = 0;
+                idxHoras.forEach(ci => {
+                    const v = fila[ci];
+                    if (v === 1 || v === '1' || String(v).trim().toLowerCase() === 'x' || String(v).trim().toLowerCase() === 'on') horasEncendido++;
+                });
+                const energia = (potencia / 1000) * horasEncendido;
+                parsed.push({
+                    Carga: String(nombre),
+                    Potencia_W: potencia,
+                    HorasEncendido: horasEncendido,
+                    Energia_kWh: energia,
+                    HoraInicio: 0,
+                    HoraFin: 0
+                });
+            }
+
+            if (parsed.length === 0) {
+                mostrarAlerta('No se encontraron filas válidas en el archivo.', 'error');
+                return;
+            }
+
+            // append to datosManuales (or replace)
+            // here we replace current data to avoid duplicates; adjust as needed
+            datosManuales.length = 0;
+            parsed.forEach(p => datosManuales.push(p));
+            actualizarTablaManual();
+            mostrarAlerta(`Archivo procesado: ${parsed.length} cargas importadas.`, 'success');
+        }
+
+        /***************  Process -> metrics + LDC + Heatmap  *****************/
+        document.getElementById('processBtn').addEventListener('click', () => {
+            if (datosManuales.length === 0) {
+                mostrarAlerta('No hay datos para procesar.', 'error');
+                return;
+            }
+
+            // compute hourly matrix: rows = loads, cols = 0..23 (1 if on)
+            const matrix = datosManuales.map(d => {
+                const row = new Array(24).fill(0);
+                const hi = Number(d.HoraInicio || 0);
+                const hf = Number(d.HoraFin || 0);
+                // if HoursEncendido is counted without start/end (when imported from sheet), we can't reconstruct; in that case assume no hourly pattern
+                if (typeof d.HoraInicio === 'number' && typeof d.HoraFin === 'number' && (d.HoraInicio !== 0 || d.HoraFin !== 0)) {
+                    if (d.HoraInicio === 0 && d.HoraFin === 24) {
+                        for (let h = 0; h < 24; h++) row[h] = 1;
+                    } else if (hi <= hf) {
+                        for (let h = hi; h < hf; h++) row[h % 24] = 1;
+                    } else {
+                        // overnight
+                        for (let h = hi; h < 24; h++) row[h] = 1;
+                        for (let h = 0; h < hf; h++) row[h] = 1;
+                    }
+                } else {
+                    // fallback: if HorasEncendido is present and >0, distribute as first hours of day
+                    const he = Math.round(Number(d.HorasEncendido || 0));
+                    for (let h = 0; h < he && h < 24; h++) row[h] = 1;
+                }
+                return row;
+            });
+
+            // hourlyTotals (kW)
+            const hourlyTotals = new Array(24).fill(0);
+            matrix.forEach((row, idx) => {
+                const potKw = (Number(datosManuales[idx].Potencia_W || 0) / 1000);
+                for (let h = 0; h < 24; h++) {
+                    if (row[h]) hourlyTotals[h] += potKw;
+                }
+            });
+
+            // energy total (kWh) = sum(hourlyTotals)
+            const energiaTotal = hourlyTotals.reduce((a, b) => a + b, 0);
+            const potencias_kW = datosManuales.map(d => (Number(d.Potencia_W || 0) / 1000));
+            const potenciaMedia = potencias_kW.length ? (potencias_kW.reduce((a, b) => a + b, 0) / potencias_kW.length) : 0;
+            const potenciaPico = potencias_kW.length ? Math.max(...potencias_kW) : 0;
+
+            document.getElementById('energiaTotal').textContent = energiaTotal.toFixed(2);
+            document.getElementById('potenciaMedia').textContent = potenciaMedia.toFixed(2);
+            document.getElementById('potenciaPico').textContent = potenciaPico.toFixed(2);
+
+            // LDC: sort hourlyTotals descending
+            const potOrdenadas = hourlyTotals.slice().sort((a, b) => b - a);
+            const porcentaje = potOrdenadas.map((_, i) => (i / potOrdenadas.length) * 100);
+
+            // Chart LDC (Chart.js)
+            const ctx = document.getElementById('ldcChart').getContext('2d');
+            if (ldcChart) ldcChart.destroy();
+            ldcChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: porcentaje.map(v => v.toFixed(2)),
+                    datasets: [{
+                        label: 'Potencia (kW) — LDC',
+                        data: potOrdenadas,
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13,110,253,0.08)',
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Duración (% del tiempo)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Potencia (kW)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Heatmap: rows = cargas names, cols = 0..23, z = power kW when on
+            const z = matrix.map((row, idx) => row.map(v => v ? (Number(datosManuales[idx].Potencia_W || 0) / 1000) : 0));
+            const xHours = Array.from({
+                length: 24
+            }, (_, i) => i);
+            const yNames = datosManuales.map(d => d.Carga);
+
+            // if no loads / huge sizes, handle gracefully
+            Plotly.newPlot('heatmapDiv', [{
+                z: z,
+                x: xHours,
+                y: yNames,
+                type: 'heatmap',
+                colorscale: 'YlOrRd',
+                hovertemplate: '%{y} - %{x}:00<br>%{z:.3f} kW<extra></extra>'
+            }], {
+                title: 'Mapa de calor — Potencia por hora (kW)',
+                xaxis: {
+                    title: 'Hora'
+                },
+                yaxis: {
+                    automargin: true
+                }
+            }, {
+                responsive: true
+            });
+
+            mostrarAlerta('Métricas y gráficas generadas.', 'success');
+        });
+
+        /***************  Helper: update manual total when selects change  *****************/
+        document.getElementById('manualInicio').addEventListener('input', actualizarTotalInterfaz);
+        document.getElementById('manualFin').addEventListener('input', actualizarTotalInterfaz);
+
+        /***************  Initial render  *****************/
+        actualizarTablaManual();
+
+        /***************  Chatbase snippet (keep it)  *****************/
+        (function() {
+            if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+                window.chatbase = (...a) => {
+                    if (!window.chatbase.q) {
+                        window.chatbase.q = []
+                    }
+                    window.chatbase.q.push(a)
+                };
+                window.chatbase = new Proxy(window.chatbase, {get(t, p) {
+                        if (p === "q") {
+                            return t.q
+                        }
+                        return (...a) => t(p, ...a)
+                    }
+                });
+            }
+            const onLoad = function() {
+                const s = document.createElement("script");
+                s.src = "https://www.chatbase.co/embed.min.js";
+                s.id = "0qDQ0e7YV_kv0sn-cXXlK";
+                s.domain = "www.chatbase.co";
+                document.body.appendChild(s);
+            };
+            if (document.readyState === "complete") {
+                onLoad();
+            } else {
+                window.addEventListener("load", onLoad);
+            }
+        })();
+    </script>
+</body>
+
+</html>

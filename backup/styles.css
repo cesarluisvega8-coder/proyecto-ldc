@@ -1,0 +1,11 @@
+body {
+  background: #f8f9fa;
+}
+
+.card {
+  border-radius: 1rem;
+}
+
+canvas {
+  max-height: 400px;
+}
