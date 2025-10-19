@@ -189,6 +189,7 @@ thead.table-light {
 
 /* Other styles CSS*/
 
+
 .appliance-card {
     width: 100px;
     height: 100px;
@@ -198,20 +199,39 @@ thead.table-light {
     text-align: center;
     padding: 10px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(.4,1.4,.6,1);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+    position: relative;
+    outline: none;
 }
 
-.appliance-card:hover {
+.appliance-card:hover, .appliance-card:focus {
     background: #e9f5ff;
     border-color: #007bff;
-    transform: scale(1.05);
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 4px 16px rgba(13,110,253,0.13), 0 2px 4px rgba(0,0,0,0.07);
+    z-index: 2;
 }
 
 .appliance-card.selected {
     background: #dbeafe;
     border-color: #0d6efd;
     box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
+    z-index: 3;
+}
+
+/* Centrar el header del panel de electrodomésticos esenciales */
+.card-header.bg-light.fw-bold.text-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.13em;
+    text-align: center;
 }
 
 @keyframes flash {
