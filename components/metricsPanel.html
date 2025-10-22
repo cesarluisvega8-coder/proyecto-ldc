@@ -1,0 +1,72 @@
+<!-- Panel de métricas -->
+<div class="card shadow-sm p-3 mb-4">
+    <div class="solar-divider"></div>
+    <h5 class="text-center mb-3">📊 Métricas energéticas</h5>
+    
+    <!-- Tabs para periodos -->
+    <ul class="nav nav-tabs solar-tabs mb-3 justify-content-center" id="metricsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="daily-tab" data-bs-toggle="tab" data-bs-target="#dailyMetrics" type="button" role="tab">
+                🌞 Diario
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthlyMetrics" type="button" role="tab">
+                📅 Mensual
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="yearly-tab" data-bs-toggle="tab" data-bs-target="#yearlyMetrics" type="button" role="tab">
+                📆 Anual
+            </button>
+        </li>
+    </ul>
+
+    <!-- Contenido de las pestañas -->
+    <div class="tab-content" id="metricsTabsContent">
+        <!-- Métricas Diarias -->
+        <div class="tab-pane fade show active" id="dailyMetrics" role="tabpanel">
+            <div class="d-flex flex-wrap justify-content-center gap-4">
+                <div class="solar-metric">
+                    <span class="solar-icon">🔋</span> Energía diaria: <strong id="energiaTotal_dia">-</strong> kWh/día
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_dia">-</strong> kW
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_dia">-</strong> kW
+                </div>
+            </div>
+        </div>
+
+        <!-- Métricas Mensuales -->
+        <div class="tab-pane fade" id="monthlyMetrics" role="tabpanel">
+            <div class="d-flex flex-wrap justify-content-center gap-4">
+                <div class="solar-metric">
+                    <span class="solar-icon">🔋</span> Energía mensual: <strong id="energiaTotal_mes">-</strong> kWh/mes
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_mes">-</strong> kW
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_mes">-</strong> kW
+                </div>
+            </div>
+        </div>
+
+        <!-- Métricas Anuales -->
+        <div class="tab-pane fade" id="yearlyMetrics" role="tabpanel">
+            <div class="d-flex flex-wrap justify-content-center gap-4">
+                <div class="solar-metric">
+                    <span class="solar-icon">🔋</span> Energía anual: <strong id="energiaTotal_anio">-</strong> kWh/año
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_anio">-</strong> kW
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_anio">-</strong> kW
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

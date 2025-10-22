@@ -11,6 +11,7 @@
     
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/metricStyles.css">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -23,11 +24,46 @@
 </head>
 
 <body>
+    <!-- Selector de modo oscuro/claro -->
+    <div style="position:fixed;top:18px;right:32px;z-index:999;">
+        <button id="themeToggle" class="btn btn-outline-dark btn-sm" title="Cambiar modo claro/oscuro">
+            <span id="themeIcon">🌙</span> Modo oscuro
+        </button>
+    </div>
+
+    <!-- perfil horario movido al final del documento -->
     <div class="container py-4">
-        <h1 class="text-center mb-4">⚡ Herramienta Solar - Cuadro de Carga y Análisis</h1>
+                <div class="solar-header text-center mb-4 position-relative">
+                        <div style="position:absolute;left:24px;top:10px;z-index:1;">
+                                <!-- SVG Panel Solar y Rayos -->
+                                <svg width="90" height="60" viewBox="0 0 90 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="10" y="30" width="70" height="18" rx="4" fill="#43ea7c" stroke="#0d6efd" stroke-width="2"/>
+                                    <rect x="18" y="36" width="54" height="6" rx="2" fill="#b2f7ef"/>
+                                    <circle cx="45" cy="20" r="12" fill="#ffe066" stroke="#ffd700" stroke-width="3">
+                                        <animate attributeName="r" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <g>
+                                        <line x1="45" y1="4" x2="45" y2="-8" stroke="#ffd700" stroke-width="2">
+                                            <animate attributeName="y2" values="-8;0;-8" dur="2s" repeatCount="indefinite"/>
+                                        </line>
+                                        <line x1="60" y1="10" x2="70" y2="0" stroke="#ffd700" stroke-width="2">
+                                            <animate attributeName="x2" values="70;65;70" dur="2s" repeatCount="indefinite"/>
+                                        </line>
+                                        <line x1="30" y1="10" x2="20" y2="0" stroke="#ffd700" stroke-width="2">
+                                            <animate attributeName="x2" values="20;25;20" dur="2s" repeatCount="indefinite"/>
+                                        </line>
+                                    </g>
+                                </svg>
+                        </div>
+                        <span class="solar-icon" style="font-size:2.5rem;">🔆</span>
+                        <span style="font-size:2.1rem;font-weight:600;color:#1b5e20;">Herramienta Solar</span>
+                        <div style="font-size:1.1rem;color:#0d6efd;margin-top:0.5rem;">Cuadro de Carga y Análisis Energético</div>
+                </div>
 
         <!-- Carga de datos -->
         <div class="card shadow-sm p-4 mb-4">
+    <div class="solar-divider"></div>
+    <div class="solar-divider"></div>
             <h5>📂 Carga de datos</h5>
             <p class="small-muted mb-2">
                 • Formato plantilla: hoja <strong>LINEA BASE</strong> con columnas: <code>Item, Carga, Potencia (W), 0,1,...,23</code>.<br> • Puedes descargar la plantilla, cargar un .xlsx del mismo formato o usar datos de ejemplo.
@@ -168,8 +204,7 @@
                             <th style="width:40px">#</th>
                             <th>Carga</th>
                             <th style="width:120px">Potencia (W)</th>
-                            <th style="width:120px">Hora inicio</th>
-                            <th style="width:120px">Hora fin</th>
+                            <th style="width:180px">Horarios</th>
                             <th style="width:120px">Horas encendido</th>
                             <th style="width:140px">Energía (kWh)</th>
                             <th style="width:80px">Acción</th>
@@ -177,7 +212,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="8" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>
+                            <td colspan="7" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>
                         </tr>
                     </tbody>
                 </table>
@@ -185,22 +220,146 @@
         </div>
 
         <!-- Métricas -->
+        <!-- Reemplazado por componente de métricas (diario/mensual/anual) -->
+        <!-- Begin metricsPanel -->
         <div class="card shadow-sm p-3 mb-4">
-            <h5 class="text-center">📊 Métricas</h5>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">Energía total: <strong id="energiaTotal">-</strong> kWh</li>
-                <li class="list-group-item">Potencia media: <strong id="potenciaMedia">-</strong> kW</li>
-                <li class="list-group-item">Potencia pico: <strong id="potenciaPico">-</strong> kW</li>
-            </ul>
+    <div class="solar-divider"></div>
+    <h5 class="text-center mb-3">📊 Métricas energéticas</h5>
+    
+    <!-- Tabs para periodos -->
+    <ul class="nav nav-tabs solar-tabs mb-3 justify-content-center" id="metricsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="daily-tab" data-bs-toggle="tab" data-bs-target="#dailyMetrics" type="button" role="tab">
+                 Diario
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthlyMetrics" type="button" role="tab">
+                📅 Mensual
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="yearly-tab" data-bs-toggle="tab" data-bs-target="#yearlyMetrics" type="button" role="tab">
+                📆 Anual
+            </button>
+        </li>
+    </ul>
+
+    <!-- Contenido de las pestañas -->
+    <div class="tab-content" id="metricsTabsContent">
+        <!-- Métricas Diarias -->
+        <div class="tab-pane fade show active" id="dailyMetrics" role="tabpanel">
+            <div class="d-flex flex-wrap justify-content-center gap-4">
+                <div class="solar-metric">
+                    <span class="solar-icon">🔋</span> Energía diaria: <strong id="energiaTotal_dia">-</strong> kWh/día
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_dia">-</strong> kW
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_dia">-</strong> kW
+                </div>
+            </div>
         </div>
+
+        <!-- Métricas Mensuales -->
+        <div class="tab-pane fade" id="monthlyMetrics" role="tabpanel">
+            <div class="d-flex flex-wrap justify-content-center gap-4">
+                <div class="solar-metric">
+                    <span class="solar-icon">🔋</span> Energía mensual: <strong id="energiaTotal_mes">-</strong> kWh/mes
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_mes">-</strong> kW
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_mes">-</strong> kW
+                </div>
+            </div>
+        </div>
+
+        <!-- Métricas Anuales -->
+        <div class="tab-pane fade" id="yearlyMetrics" role="tabpanel">
+            <div class="d-flex flex-wrap justify-content-center gap-4">
+                <div class="solar-metric">
+                    <span class="solar-icon">🔋</span> Energía anual: <strong id="energiaTotal_anio">-</strong> kWh/año
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_anio">-</strong> kW
+                </div>
+                <div class="solar-metric">
+                    <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_anio">-</strong> kW
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        <!-- End metricsPanel -->
 
         <!-- Visualizaciones -->
         <div class="card shadow-sm p-3 mb-5">
+    <div class="solar-divider"></div>
             <h5 class="text-center mb-3">📈 Visualizaciones</h5>
-            <div class="mb-3">
-                <canvas id="ldcChart" style="max-height:320px;"></canvas>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <ul class="nav nav-tabs solar-tabs" id="chartTabs" role="tablist" style="border-radius:1rem;overflow:hidden;">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="ldc-tab" data-bs-toggle="tab" data-bs-target="#ldcPanel" type="button" role="tab" aria-controls="ldcPanel" aria-selected="true">Cuadro de carga LDC</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="heatmap-tab" data-bs-toggle="tab" data-bs-target="#heatmapPanel" type="button" role="tab" aria-controls="heatmapPanel" aria-selected="false">Mapa de calor</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="temporal-tab" data-bs-toggle="tab" data-bs-target="#temporalPanel" type="button" role="tab" aria-controls="temporalPanel" aria-selected="false">Consumo temporal</button>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                  <select id="periodSelect" class="form-select" style="max-width:140px;">
+                      <option value="dia">Por día</option>
+                      <option value="mes">Por mes</option>
+                  </select>
+                  <select id="temporalModeSelect" class="form-select form-select-sm" style="max-width:220px;">
+                      <option value="suma">Suma por hora (actual)</option>
+                      <option value="por-carga">Series por carga</option>
+                  </select>
+                  <select id="temporalTopNSelect" class="form-select form-select-sm" style="max-width:120px;">
+                      <option value="0">All</option>
+                      <option value="5">Top 5</option>
+                      <option value="10">Top 10</option>
+                      <option value="20">Top 20</option>
+                  </select>
+                </div>
             </div>
-            <div id="heatmapDiv" style="height:380px;"></div>
+            <div class="tab-content" id="chartTabsContent">
+                <div class="tab-pane fade" id="temporalPanel" role="tabpanel" aria-labelledby="temporal-tab">
+                    <div id="temporalNote" class="alert alert-warning py-2 px-3 mb-2 d-none" style="font-size:0.98em;"></div>
+                    <canvas id="temporalChart" style="max-height:320px;width:100%;background:transparent;border-radius:1.2rem;"></canvas>
+                </div>
+                <div class="tab-pane fade show active" id="ldcPanel" role="tabpanel" aria-labelledby="ldc-tab">
+                    <div id="ldcNote" class="alert alert-warning py-2 px-3 mb-2 d-none" style="font-size:0.98em;"></div>
+                    <canvas id="ldcChart" style="max-height:320px;"></canvas>
+                </div>
+                <div class="tab-pane fade" id="heatmapPanel" role="tabpanel" aria-labelledby="heatmap-tab">
+                    <div class="row g-3 align-items-start">
+                        <div class="col-lg-9 col-md-8 col-12">
+                            <div id="heatmapNote" class="alert alert-warning py-2 px-3 mb-2 d-none" style="font-size:0.98em;"></div>
+                            <div id="heatmapDiv" style="height:380px;"></div>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-12">
+                            <div class="card shadow-sm p-3 heatmap-explain">
+                                <h6 class="mb-2 heatmap-title">¿Cómo leer el mapa de calor (Potencia vs Tiempo)?</h6>
+                                <p class="heatmap-desc">
+                                    Este mapa muestra la potencia asociada a cada carga a lo largo del tiempo. En la vista <b>diaria</b> el eje X representa las 24 horas y el eje Y las cargas; los colores indican la potencia (kW) consumida en esa hora por carga. En la vista <b>mensual</b> el eje X son los meses y los valores representan energía estimada por mes.<br>
+                                    <b>Interpretación rápida:</b>
+                                    <ul>
+                                        <li><b>Rojo/Amarillo:</b> Zonas de mayor potencia o energía — posibles picos de demanda.</li>
+                                        <li><b>Azul/Verde:</b> Bajo consumo — horarios seguros o para desplazar cargas.</li>
+                                    </ul>
+                                    Usa el mapa para identificar picos horarios y planificar desplazamiento de cargas o almacenamiento. La barra lateral muestra la escala (kW o kWh según periodo).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -210,7 +369,149 @@
     <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- jsPDF (UMD build local) -->
+    <script src="libs/jspdf.umd.min.js"></script>
+
     <script type="module" src="js/mainApp.js"></script>
+    <!-- NUEVO: Métricas por perfil horario (día / noche) -->
+    <div class="container py-4">
+        <div class="card shadow-sm p-4 mb-5">
+            <h5 class="mb-3">🕘 Métricas por perfil horario</h5>
+            <p class="small text-muted">Genera métricas y visualizaciones (LDC, Consumo temporal y mapa de calor) filtradas por perfil horario: Día (06:00-21:59) o Noche (22:00-05:59).</p>
+            <div class="d-flex gap-2 align-items-center mb-3">
+                <label class="mb-0">Perfil:</label>
+                <select id="perfilHorarioSelect" class="form-select form-select-sm" style="max-width:180px;">
+                    <option value="dia">Día (06:00 - 21:59)</option>
+                    <option value="noche">Noche (22:00 - 05:59)</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+                <div id="customPerfilControls" class="d-none align-items-center gap-2">
+                    <label class="mb-0">Inicio</label>
+                    <select id="customStartHour" class="form-select form-select-sm" style="max-width:90px;"></select>
+                    <label class="mb-0">Fin</label>
+                    <select id="customEndHour" class="form-select form-select-sm" style="max-width:90px;"></select>
+                </div>
+                <button id="generarPerfilBtn" class="btn btn-primary btn-sm">Generar métricas por perfil</button>
+            </div>
+
+            <div id="perfilResults" class="mt-3">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <div class="card p-3">
+                            <h6>LDC (perfil)</h6>
+                            <canvas id="ldcPerfilChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card p-3">
+                            <h6>Consumo temporal (perfil)</h6>
+                            <canvas id="temporalPerfilChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card p-3">
+                            <h6>Mapa de calor (perfil)</h6>
+                            <div id="heatmapPerfilDiv" style="height:260px;"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card p-3">
+                            <h6>Resumen (perfil)</h6>
+                            <div class="mt-2">
+                                <div> Energía total: <strong id="resEnergiaPerfil">-</strong> kWh</div>
+                                <div> Potencia media: <strong id="resPotenciaMediaPerfil">-</strong> kW</div>
+                                <div> Potencia pico: <strong id="resPotenciaPicoPerfil">-</strong> kW</div>
+                            </div>
+                            <div class="mt-3 d-flex gap-2">
+                                <button id="exportPerfilBtn" class="btn btn-outline-primary btn-sm">Exportar PNG</button>
+                                <button id="exportPerfilPdfBtn" class="btn btn-outline-primary btn-sm">Exportar PDF</button>
+                                <button id="exportFullReportBtn" class="btn btn-outline-success btn-sm">Exportar informe PDF</button>
+                                <button id="savePerfilPrefBtn" class="btn btn-outline-secondary btn-sm">Guardar preferencia</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card p-3">
+                            <h6>Notas</h6>
+                            <p class="small text-muted">Exporta las gráficas combinadas o guarda la preferencia de perfil para futuras sesiones.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spinner overlay para generación de perfil -->
+        <div id="profileSpinner" class="profile-spinner-overlay">
+            <div class="profile-spinner">
+                <div class="dot"></div>
+                <div>Generando métricas... por favor espera</div>
+            </div>
+        </div>
+    <script>
+    // Animación de métricas solares
+    function animateMetrics() {
+        document.querySelectorAll('.solar-metric strong').forEach(el => {
+            el.style.transition = 'transform 0.7s cubic-bezier(.4,1.4,.6,1)';
+            el.style.transform = 'scale(1.25)';
+            setTimeout(() => { el.style.transform = 'scale(1)'; }, 700);
+        });
+    }
+    window.addEventListener('DOMContentLoaded', animateMetrics);
+    // También animar cuando se actualizan métricas
+    const energiaTotal = document.getElementById('energiaTotal');
+    const potenciaMedia = document.getElementById('potenciaMedia');
+    const potenciaPico = document.getElementById('potenciaPico');
+    [energiaTotal, potenciaMedia, potenciaPico].forEach(el => {
+        const observer = new MutationObserver(animateMetrics);
+        observer.observe(el, { childList: true });
+    });
+    </script>
+    <script>
+    // Modo oscuro/claro
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    function setTheme(dark) {
+    document.body.classList.toggle('dark-mode', dark);
+    themeIcon.textContent = dark ? '☀️' : '🌙';
+    themeToggle.classList.toggle('btn-dark', dark);
+    themeToggle.classList.toggle('btn-outline-dark', !dark);
+    themeToggle.textContent = '';
+    themeToggle.appendChild(themeIcon);
+    themeToggle.append(' ', dark ? 'Modo claro' : 'Modo oscuro');
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+    // Disparar evento para actualizar gráficas
+    const event = new Event('classChange');
+    document.body.dispatchEvent(event);
+    }
+    themeToggle.addEventListener('click', () => {
+        setTheme(!document.body.classList.contains('dark-mode'));
+    });
+    // Inicializar según preferencia
+    setTheme(localStorage.getItem('theme') === 'dark');
+    </script>
+
+
+<!-- =================== CHATBASE =================== -->
+<script>
+(function(){
+  if(!window.chatbase||window.chatbase("getState")!=="initialized"){
+    window.chatbase=(...a)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(a)};
+    window.chatbase=new Proxy(window.chatbase,{get(t,p){if(p==="q"){return t.q}return(...a)=>t(p,...a)}});
+  }
+  const onLoad=function(){
+    const s=document.createElement("script");
+    s.src="https://www.chatbase.co/embed.min.js";
+    s.id="0qDQ0e7YV_kv0sn-cXXlK";
+    s.domain="www.chatbase.co";
+    document.body.appendChild(s);
+  };
+  if(document.readyState==="complete"){onLoad();}
+  else{window.addEventListener("load",onLoad);}
+})();
+</script>
+
+
 </body>
 
 </html>

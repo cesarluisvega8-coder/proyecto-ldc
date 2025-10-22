@@ -1,3 +1,257 @@
+/* === TEMÁTICA ENERGÍA SOLAR Y ELECTRICIDAD === */
+body {
+    background: linear-gradient(135deg, #f9f6e7 0%, #ffe066 40%, #b2f7ef 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+.solar-header {
+    background: linear-gradient(90deg, #ffe066 0%, #ffd700 60%, #b2f7ef 100%);
+    border-radius: 1.5rem;
+    box-shadow: 0 6px 32px rgba(255, 215, 0, 0.13);
+    padding: 1.5rem 1rem 1rem 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+.solar-header .solar-icon {
+    font-size: 2.5rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.card {
+    border-radius: 1.5rem !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    border: none;
+    background: rgba(255,255,255,0.95);
+    transition: box-shadow 0.2s;
+}
+.card:hover {
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.13), 0 4px 24px rgba(0,0,0,0.10);
+}
+
+.btn-primary, .btn-success, .btn-outline-success, .btn-outline-primary {
+    border-radius: 2rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.09);
+}
+.btn-success {
+    background: linear-gradient(90deg, #43ea7c 0%, #ffe066 100%);
+    border: none;
+    color: #1b5e20;
+}
+.btn-primary {
+    background: linear-gradient(90deg, #0d6efd 0%, #ffe066 100%);
+    border: none;
+    color: #fff;
+}
+.btn-outline-success {
+    border-color: #43ea7c;
+    color: #43ea7c;
+}
+.btn-outline-primary {
+    border-color: #0d6efd;
+    color: #0d6efd;
+}
+
+.appliance-card {
+    width: 110px;
+    height: 110px;
+    background: linear-gradient(135deg, #fffbe6 60%, #b2f7ef 100%);
+    border: 2px solid #ffe066;
+    border-radius: 1.2rem;
+    text-align: center;
+    padding: 12px 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(.4,1.4,.6,1);
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.09);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    outline: none;
+    position: relative;
+}
+.appliance-card:hover, .appliance-card:focus {
+    background: linear-gradient(135deg, #ffe066 60%, #b2f7ef 100%);
+    border-color: #43ea7c;
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 8px 32px rgba(67,234,124,0.13), 0 2px 8px rgba(255,215,0,0.09);
+    z-index: 2;
+}
+.appliance-card.selected {
+    background: linear-gradient(135deg, #ffe066 60%, #43ea7c 100%);
+    border-color: #0d6efd;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
+    z-index: 3;
+}
+
+.solar-metric {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1em;
+}
+.solar-metric .solar-icon {
+    font-size: 1.5em;
+    color: #ffe066;
+}
+
+.table {
+    border-radius: 1rem;
+    overflow: hidden;
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 2px 8px rgba(255,215,0,0.07);
+}
+.table th, .table td {
+    border: none !important;
+    padding: 0.7em 0.5em;
+}
+.table thead {
+    background: linear-gradient(90deg, #ffe066 0%, #b2f7ef 100%);
+    color: #333;
+}
+.table tbody tr {
+    transition: background 0.2s;
+}
+.table tbody tr:hover {
+    background: #fffde7;
+}
+
+.form-control, .form-select {
+    border-radius: 1rem;
+    border: 1.5px solid #ffe066;
+    background: #fffbe6;
+    transition: border-color 0.2s;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #43ea7c;
+    box-shadow: 0 0 0 2px #b2f7ef44;
+}
+
+.solar-divider {
+    border-top: 2px dashed #ffe066;
+    margin: 2rem 0;
+}
+
+.solar-panel {
+    background: linear-gradient(135deg, #b2f7ef 0%, #43ea7c 100%);
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(67,234,124,0.09);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #1b5e20;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+/* === MODO OSCURO === */
+.dark-mode {
+    background: #181a1b !important;
+    color: #e2e2e2 !important;
+}
+.dark-mode .card,
+.dark-mode .table,
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background: #23272b !important;
+    color: #e2e2e2 !important;
+    border-color: #444 !important;
+}
+.dark-mode .table-light {
+    background: #23272b !important;
+    color: #e2e2e2 !important;
+}
+.dark-mode .btn,
+.dark-mode .btn-outline-dark {
+    background: #23272b !important;
+    color: #e2e2e2 !important;
+    border-color: #444 !important;
+}
+.dark-mode .btn-success,
+.dark-mode .btn-primary,
+.dark-mode .btn-danger,
+.dark-mode .btn-outline-primary,
+.dark-mode .btn-outline-success,
+.dark-mode .btn-outline-danger,
+.dark-mode .btn-outline-secondary {
+    background: #23272b !important;
+    color: #e2e2e2 !important;
+    border-color: #444 !important;
+}
+.dark-mode .appliance-card {
+    background: #23272b !important;
+    color: #e2e2e2 !important;
+    border-color: #444 !important;
+}
+.dark-mode .appliance-card.selected {
+    background: #0d6efd22 !important;
+    border-color: #0d6efd !important;
+}
+.dark-mode .custom-alert {
+    background: #23272b !important;
+    color: #e2e2e2 !important;
+    border-left-color: #0d6efd !important;
+}
+.dark-mode .card-header.bg-light {
+    background: #23272b !important;
+    color: #e2e2e2 !important;
+}
+.dark-mode .form-label,
+.dark-mode .text-muted,
+.dark-mode .small-muted {
+    color: #b0b0b0 !important;
+}
+.dark-mode #heatmapDiv {
+    background: #23272b !important;
+}
+
+/* Heatmap explanatory card styles — ensure contrast in light and dark modes */
+.heatmap-explain {
+    background: rgba(255,255,255,0.96);
+    color: #222;
+    border-radius: 1rem;
+}
+.heatmap-explain .heatmap-title {
+    color: #0d6efd;
+    font-weight: 600;
+}
+.heatmap-explain .heatmap-desc {
+    color: #333;
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+.dark-mode .heatmap-explain {
+    background: #1f2326 !important;
+    color: #e6eef6 !important;
+    border: 1px solid #2b3034 !important;
+}
+.dark-mode .heatmap-explain .heatmap-title {
+    color: #6ec5ff !important;
+}
+.dark-mode .heatmap-explain .heatmap-desc {
+    color: #c9d6e3 !important;
+}
+
+/* Spinner overlay used during profile generation/export */
+.profile-spinner-overlay {
+    position: fixed;
+    left: 0; right: 0; top: 0; bottom: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.18s ease, visibility 0.18s;
+}
+.profile-spinner-overlay.show { visibility: visible; opacity: 1; }
+.profile-spinner { background: white; padding: 18px 22px; border-radius: 8px; display:flex; gap:12px; align-items:center; }
+.profile-spinner .dot { width:10px; height:10px; border-radius:50%; background:#0d6efd; animation: pulse 1s infinite; }
+@keyframes pulse { 0%{ transform:scale(1); }50%{ transform:scale(1.6); opacity:0.6;}100%{ transform:scale(1); opacity:1;} }
 body {
     background: #f8f9fa;
 }
