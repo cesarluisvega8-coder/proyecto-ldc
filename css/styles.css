@@ -607,3 +607,41 @@ thead.table-light {
 .row-flash {
     animation: flash 1.8s ease forwards;
 }
+
+/* Resumen perfil: tarjeta distintiva */
+.summary-profile-card {
+    background: #f8fbff;
+    border-left: 4px solid #0d6efd;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(13,110,253,0.08);
+}
+.summary-profile-card h6 { color: #0d6efd; font-weight: 600; }
+.summary-profile-card strong { color: #111827; font-weight: 700; }
+
+.dark-mode .summary-profile-card {
+    background: #1f262c !important;
+    border-left-color: #6ec5ff !important;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25) !important;
+}
+.dark-mode .summary-profile-card h6 { color: #6ec5ff !important; }
+.dark-mode .summary-profile-card strong { color: #e5e7eb !important; }
+
+/* Perfil horario: limitar ancho máximo en pantallas muy anchas */
+.container-profile {
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+@media (max-width: 1200px) {
+    .container-profile { max-width: 100%; }
+}
+
+/* Botón de tema: esquina superior derecha del header (no fijo) */
+.solar-header .theme-toggle {
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    z-index: 2;
+    opacity: 0.9;
+}
+.solar-header .theme-toggle:hover { opacity: 1; }
