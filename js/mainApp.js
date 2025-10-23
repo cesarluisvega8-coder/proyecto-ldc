@@ -28,16 +28,28 @@ window.addEventListener('DOMContentLoaded', () => {
     // NUEVO: Estructura de datos para múltiples rangos por carga
     // Cada carga tendrá: { Carga, Potencia_W, Rangos: [{inicio, fin}], Energia_kWh }
 
-    // Modificar función para agregar carga manual con múltiples rangos usando modal
-    document.getElementById('addManualBtn').addEventListener('click', async () => {
-        const nombre = document.getElementById('manualCarga').value.trim();
+    // Agregar manual a la tabla (validar y abrir modal de rangos)
+    const addManualBtn = document.getElementById('addManualBtn');
+    if (!addManualBtn) {
+        console.warn('#addManualBtn no encontrado en DOM');
+    } else addManualBtn.addEventListener('click', async () => {
+        const nombre = (document.getElementById('manualCarga').value || '').trim();
         const potencia = parseFloat(document.getElementById('manualPotencia').value);
         if (!nombre || isNaN(potencia)) {
             mostrarAlerta('Completa nombre y potencia.', 'error');
             return;
         }
         try {
-            const rangos = await rangesModal.open();
+            let rangos = null;
+            try {
+                rangos = await rangesModal.open();
+            } catch (modalErr) {
+                // Fallback: si el modal no está disponible, usar inicio/fin como un único rango
+                console.warn('No se pudo abrir modal de rangos, usando fallback inicio/fin', modalErr);
+                const hi = Number(document.getElementById('manualInicio')?.value ?? 0);
+                const hf = Number(document.getElementById('manualFin')?.value ?? (hi+1));
+                rangos = [{ inicio: hi, fin: hf }];
+            }
             if (!Array.isArray(rangos) || rangos.length === 0) {
                 mostrarAlerta('No se definieron rangos.', 'error');
                 return;
@@ -59,8 +71,9 @@ window.addEventListener('DOMContentLoaded', () => {
             // limpiar inputs
             document.getElementById('manualCarga').value = '';
             document.getElementById('manualPotencia').value = '';
-        } catch (err) {
-            console.error('Modal cancelado o error', err);
+        } catch (e) {
+            console.warn('Error al agregar con rangos', e);
+            mostrarAlerta('No se pudo agregar la carga. Revisa la consola.', 'error');
         }
     });
 
@@ -249,8 +262,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     // P1: Resumen ejecutivo y métricas
                     agregarEncabezado(currentPage);
                     yPos = margin + 20;
-                    pdf.setFontSize(16); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
-                    pdf.text('📊 Resumen Ejecutivo', margin, yPos); yPos += 12;
+                    pdf.setFontSize(14); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
+                    pdf.text('Resumen Ejecutivo', margin, yPos); yPos += 12;
 
                     const energiaTotal = (document.getElementById('energiaTotal_dia')||document.getElementById('energiaTotal')||{}).textContent || '-';
                     const potenciaMedia = (document.getElementById('potenciaMedia_dia')||document.getElementById('potenciaMedia')||{}).textContent || '-';
@@ -267,7 +280,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         if(idx===2){ xPos=margin; cardY+=cardHeight+5; }
                         pdf.setFillColor(...colors.lightGray); pdf.roundedRect(xPos, cardY, cardWidth, cardHeight, 2, 2, 'F');
                         pdf.setFontSize(10); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.text);
-                        pdf.text(`${m.icono} ${m.titulo}`, xPos+4, cardY+7);
+                        pdf.text(m.titulo, xPos+4, cardY+7);
                         pdf.setFontSize(18); pdf.setTextColor(...colors.primary); pdf.text(String(m.valor), xPos+4, cardY+18);
                         xPos+=cardWidth+5;
                     });
@@ -275,7 +288,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
                     // Tabla de cargas
                     pdf.setFontSize(14); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
-                    pdf.text('📋 Detalle de Cargas', margin, yPos); yPos+=10;
+                    pdf.text('Detalle de Cargas', margin, yPos); yPos+=10;
                     pdf.setFontSize(9);
                     const colWidths=[12,55,28,22,28,35];
                     const headers=['#','Carga','Potencia (W)','Horas','Energía (kWh)','Horarios'];
@@ -302,7 +315,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     // Nueva página: LDC
                     currentPage++; pdf.addPage(); agregarEncabezado(currentPage); yPos = margin + 20;
                     pdf.setFontSize(14); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
-                    pdf.text('📈 Curva de Duración de Carga (LDC)', margin, yPos); yPos+=5;
+                    pdf.text('Curva de Duración de Carga (LDC)', margin, yPos); yPos+=5;
                     pdf.setFontSize(9); pdf.setFont(undefined,'normal'); pdf.setTextColor(...colors.text);
                     const descLDC = 'La curva LDC muestra la potencia demandada ordenada de mayor a menor y el porcentaje del tiempo que se mantiene cada nivel de potencia.';
                     pdf.text(pdf.splitTextToSize(descLDC, contentWidth), margin, yPos+5); yPos+=15;
@@ -320,7 +333,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     // Nueva página: Heatmap
                     currentPage++; pdf.addPage(); agregarEncabezado(currentPage); yPos = margin + 20;
                     pdf.setFontSize(14); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
-                    pdf.text('🔥 Mapa de Calor - Distribución Horaria', margin, yPos); yPos+=5;
+                    pdf.text('Mapa de Calor - Distribución Horaria', margin, yPos); yPos+=5;
                     pdf.setFontSize(9); pdf.setFont(undefined,'normal'); pdf.setTextColor(...colors.text);
                     const descHeat = 'El mapa de calor visualiza la potencia demandada por hora del día. Colores cálidos indican mayor consumo; fríos, menor consumo.';
                     pdf.text(pdf.splitTextToSize(descHeat, contentWidth), margin, yPos+5); yPos+=15;
@@ -343,20 +356,42 @@ window.addEventListener('DOMContentLoaded', () => {
                     // Nueva página: Consumo temporal
                     currentPage++; pdf.addPage(); agregarEncabezado(currentPage); yPos = margin + 20;
                     pdf.setFontSize(14); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
-                    pdf.text('⚡ Análisis de Consumo Temporal', margin, yPos); yPos+=5;
+                    pdf.text('Análisis de Consumo Temporal', margin, yPos); yPos+=5;
                     pdf.setFontSize(9); pdf.setFont(undefined,'normal'); pdf.setTextColor(...colors.text);
                     const descTmp='Esta gráfica muestra la evolución del consumo eléctrico a lo largo del tiempo, permitiendo identificar tendencias y patrones de uso.';
                     pdf.text(pdf.splitTextToSize(descTmp, contentWidth), margin, yPos+5); yPos+=15;
                     try{
+                        // Asegurar que la pestaña temporal está visible antes de capturar
+                        await showTabAndWait('temporal-tab');
+                        await ensureChartsRendered();
                         const tempCanvas = document.getElementById('temporalChart');
-                        if (tempCanvas && tempCanvas.width && tempCanvas.height){
-                            const img=tempCanvas.toDataURL('image/png',1.0);
-                            const imgH=Math.min((contentWidth * tempCanvas.height)/Math.max(tempCanvas.width,1),120);
-                            safeAddImage(img, margin, yPos, contentWidth, imgH);
-                        } else {
-                            pdf.text('(Gráfica temporal no disponible para exportación)', margin, yPos);
+                        let added = false;
+                        if (tempCanvas) {
+                            // Si Chart.js no definió dimensiones aún, forzamos layout
+                            if (!tempCanvas.width || !tempCanvas.height) {
+                                tempCanvas.getContext('2d');
+                            }
+                            if (tempCanvas.width && tempCanvas.height){
+                                const img=tempCanvas.toDataURL('image/png',1.0);
+                                const imgH=Math.min((contentWidth * tempCanvas.height)/Math.max(tempCanvas.width,1),120);
+                                added = safeAddImage(img, margin, yPos, contentWidth, imgH);
+                                if(added) yPos += imgH + 10;
+                            }
                         }
-                    }catch(e){ console.warn('Temporal capture failed', e); pdf.text('(Gráfica temporal no disponible para exportación)', margin, yPos); }
+                        if (!added) {
+                            // Fallback: rasterizar el contenedor con html2canvas
+                            const container = tempCanvas ? tempCanvas.parentElement : document.getElementById('temporalPanel');
+                            if (container && window.html2canvas) {
+                                const canvasCap = await html2canvas(container,{scale:2,useCORS:true,logging:false,backgroundColor:'#FFFFFF'});
+                                const img = canvasCap.toDataURL('image/png',1.0);
+                                const ratio = canvasCap.height/Math.max(canvasCap.width,1);
+                                const h = Math.min(contentWidth * ratio, 120);
+                                safeAddImage(img, margin, yPos, contentWidth, h) && (yPos+=h+10);
+                            } else {
+                                pdf.text('(Gráfica temporal no disponible para exportación)', margin, yPos); yPos+=10;
+                            }
+                        }
+                    }catch(e){ console.warn('Temporal capture failed', e); pdf.text('(Gráfica temporal no disponible para exportación)', margin, yPos); yPos+=10; }
 
                     // Pie de página y guardar
                     const totalPages = pdf.internal.pages.length - 1;
@@ -446,6 +481,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Llenar selects de horas en el formulario de electrodomésticos
     function llenarSelectHorasElectro() {
+        if (!inicioElectro || !finElectro) return;
         inicioElectro.innerHTML = '';
         finElectro.innerHTML = '';
         for (let h = 0; h <= 24; h++) {
@@ -460,7 +496,62 @@ window.addEventListener('DOMContentLoaded', () => {
         inicioElectro.value = '0';
         finElectro.value = '1';
     }
-    llenarSelectHorasElectro();
+    if (inicioElectro && finElectro) {
+        llenarSelectHorasElectro();
+    }
+
+    // Handler: botón ➕ (agregado rápido con modal de rangos)
+    if (agregarElectroBtn) {
+        window.USE_MAINAPP_QUICKADD = true;
+        agregarElectroBtn.addEventListener('click', async () => {
+            const nombre = (nombreElectro?.value || '').trim();
+            const potencia = parseFloat(potenciaElectro?.value);
+            const cantidad = Math.max(1, parseInt(cantidadElectro?.value));
+            if (!nombre || isNaN(potencia) || isNaN(cantidad) || cantidad < 1) {
+                mostrarAlerta('Selecciona un equipo y completa nombre, potencia y cantidad.', 'error');
+                return;
+            }
+            try {
+                let rangos = null;
+                try {
+                    rangos = await rangesModal.open();
+                } catch (modalErr) {
+                    // Fallback: si el modal no está disponible, usar inicio/fin como un único rango
+                    console.warn('No se pudo abrir modal de rangos, usando fallback inicio/fin', modalErr);
+                    const hi = Number(inicioElectro?.value ?? 0);
+                    const hf = Number(finElectro?.value ?? (hi+1));
+                    rangos = [{ inicio: hi, fin: hf }];
+                }
+                if (!Array.isArray(rangos) || rangos.length === 0) {
+                    mostrarAlerta('No se definieron rangos.', 'error');
+                    return;
+                }
+                const energiaUnaUnidad = calcularEnergiaMultiRango(potencia, rangos);
+                const horasUnaUnidad = rangos.reduce((s,r)=>{ let d=r.fin-r.inicio; if(d<0) d+=24; if(r.inicio===0 && r.fin===24) d=24; return s+d; },0);
+                for (let i = 0; i < cantidad; i++) {
+                    window.datosManuales.push({
+                        Carga: nombre + (cantidad > 1 ? ` (${i+1})` : ''),
+                        Potencia_W: potencia,
+                        Rangos: rangos,
+                        HorasEncendido: horasUnaUnidad,
+                        Energia_kWh: energiaUnaUnidad
+                    });
+                }
+                mostrarAlerta('Electrodoméstico agregado con rangos.', 'success');
+                renderTabla();
+                procesarYGraficar(window.datosManuales, window.ldcChartRef);
+                actualizarMetricas(window.datosManuales);
+                // Ocultar formulario y deseleccionar
+                detalleElectro.classList.add('d-none');
+                applianceCards.forEach(c => c.classList.remove('selected'));
+            } catch (e) {
+                console.warn('Error al agregar con rangos (rápido)', e);
+                mostrarAlerta('No se pudo agregar el equipo. Revisa la consola.', 'error');
+            }
+        });
+    } else {
+        console.warn('#agregarElectroBtn no encontrado en DOM');
+    }
 
     // Mostrar formulario al hacer clic en un electrodoméstico
     applianceCards.forEach(card => {
@@ -471,63 +562,10 @@ window.addEventListener('DOMContentLoaded', () => {
             nombreElectro.value = card.getAttribute('data-nombre') || '';
             potenciaElectro.value = card.getAttribute('data-potencia') || '';
             cantidadElectro.value = 1;
-            inicioElectro.value = '0';
-            finElectro.value = '1';
+            // Set default hours for quick config form
+            if (inicioElectro) inicioElectro.value = '0';
+            if (finElectro) finElectro.value = '1';
         });
-    });
-
-    // Agregar electrodoméstico a la tabla y actualizar métricas/gráficas
-    agregarElectroBtn.addEventListener('click', () => {
-        const nombre = nombreElectro.value.trim();
-        const potencia = parseFloat(potenciaElectro.value);
-        const cantidad = Math.max(1, parseInt(cantidadElectro.value));
-        const hi = parseFloat(inicioElectro.value);
-        const hf = parseFloat(finElectro.value);
-        if (!nombre || isNaN(potencia) || isNaN(hi) || isNaN(hf) || isNaN(cantidad) || cantidad < 1) {
-            mostrarAlerta('Completa todos los campos del equipo.', 'error');
-            return;
-        }
-        let dur = hf - hi;
-        if (dur < 0) dur += 24;
-        if (hi === 0 && hf === 24) dur = 24;
-        const energia = (potencia / 1000) * dur * cantidad;
-        // Agregar tantas cargas como cantidad
-        for (let i = 0; i < cantidad; i++) {
-            window.datosManuales.push({
-                Carga: nombre + (cantidad > 1 ? ` (${i+1})` : ''),
-                Potencia_W: potencia,
-                HoraInicio: hi,
-                HoraFin: hf,
-                HorasEncendido: dur,
-                Energia_kWh: (potencia / 1000) * dur
-            });
-        }
-        mostrarAlerta('Electrodoméstico agregado.', 'success');
-        renderTabla();
-        procesarYGraficar(window.datosManuales, window.ldcChartRef);
-    actualizarMetricas(window.datosManuales);
-        // Ocultar formulario y deseleccionar
-        detalleElectro.classList.add('d-none');
-        applianceCards.forEach(c => c.classList.remove('selected'));
-    });
-
-    // Nota: el agregado manual ahora usa el modal de rangos (handler anterior eliminado)
-
-    // Botón limpiar tabla
-    document.getElementById('clearTableBtn').addEventListener('click', () => {
-        if (!confirm('¿Deseas limpiar la tabla y métricas?')) return;
-        window.datosManuales.length = 0;
-        renderTabla();
-        document.getElementById('energiaTotal').textContent = '-';
-        document.getElementById('potenciaMedia').textContent = '-';
-        document.getElementById('potenciaPico').textContent = '-';
-        if (window.ldcChartRef.current) {
-            window.ldcChartRef.current.destroy();
-            window.ldcChartRef.current = null;
-        }
-        Plotly.purge('heatmapDiv');
-        mostrarAlerta('Tabla y métricas limpiadas.', 'info');
-        actualizarMetricas(window.datosManuales);
     });
 
     // Botón datos de ejemplo

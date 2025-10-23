@@ -93,16 +93,23 @@ export function crearFilaTabla(itemIndex, obj, datosManuales, actualizarTablaMan
     return tr;
 }
 
-export function actualizarTablaManual(tbody, datosManuales, crearFilaTabla, mostrarAlerta) {
+export function actualizarTablaManual(tbody, datosManuales, crearFilaTabla, mostrarAlerta, onEditRanges) {
     tbody.innerHTML = '';
     if (datosManuales.length === 0) {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td colspan="8" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>`;
+        tr.innerHTML = `<td colspan="7" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>`;
         tbody.appendChild(tr);
         return;
     }
     datosManuales.forEach((d, i) => {
-        const fila = crearFilaTabla(i, d, datosManuales, () => actualizarTablaManual(tbody, datosManuales, crearFilaTabla, mostrarAlerta), mostrarAlerta);
+        const fila = crearFilaTabla(
+            i,
+            d,
+            datosManuales,
+            () => actualizarTablaManual(tbody, datosManuales, crearFilaTabla, mostrarAlerta, onEditRanges),
+            mostrarAlerta,
+            onEditRanges
+        );
         tbody.appendChild(fila);
     });
 }
