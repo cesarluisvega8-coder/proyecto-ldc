@@ -711,7 +711,7 @@ document.getElementById("addManualBtn")?.addEventListener("click", () => {
     finSel?.append(new Option(label,h));
   }
 
-  /*// Selección de tarjetas
+  // Selección de tarjetas
   const detalle=document.getElementById("detalleElectrodomestico");
   let seleccionado=null;
   document.querySelectorAll(".appliance-card").forEach(card=>{
@@ -767,5 +767,5 @@ document.getElementById("addManualBtn")?.addEventListener("click", () => {
     mostrarAlerta(`${cantidad} ${nombre}${cantidad>1?"s":""} agregado${cantidad>1?"s":""}.`,"success");
     document.querySelectorAll(".appliance-card").forEach(c=>c.classList.remove("selected"));
     detalle.classList.add("d-none");
-  });/*
+  });
 
