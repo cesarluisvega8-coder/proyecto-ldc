@@ -24,15 +24,8 @@
 </head>
 
 <body>
-    <!-- Selector de modo oscuro/claro -->
-    <div style="position:fixed;top:18px;right:32px;z-index:999;">
-        <button id="themeToggle" class="btn btn-outline-dark btn-sm" title="Cambiar modo claro/oscuro">
-            <span id="themeIcon">🌙</span> Modo oscuro
-        </button>
-    </div>
-
     <!-- perfil horario movido al final del documento -->
-    <div class="container py-4">
+    <div class="container pt-1 pb-3">
                 <div class="solar-header text-center mb-4 position-relative">
                         <div style="position:absolute;left:24px;top:6px;z-index:1;display:flex;align-items:center;gap:8px;">
                                 <img src="assets/icons/sunalyze_logo.png" alt="Solanlyze" style="height:48px;width:auto;border-radius:10px;" />
@@ -42,6 +35,9 @@
                             <span class="solar-title">Solanlyze</span>
                         </div>
                         <div class="solar-subtitle">Cuadro de Carga y Análisis Energético</div>
+                        <button id="themeToggle" class="btn btn-outline-dark btn-sm theme-toggle" title="Cambiar modo claro/oscuro">
+                            <span id="themeIcon">🌙</span>
+                        </button>
                 </div>
 
         <!-- Carga de datos -->
@@ -293,7 +289,7 @@
         <!-- End metricsPanel -->
 
         <!-- Visualizaciones -->
-        <div class="card shadow-sm p-3 mb-5">
+        <div class="card shadow-sm p-3 mb-3">
     <div class="solar-divider"></div>
             <h5 class="text-center mb-3">📈 Visualizaciones</h5>
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -365,12 +361,7 @@
 
     <!-- ALERT CONTAINER handled by JS -->
 
-    <!-- Footer desarrolladores -->
-    <div class="container pb-4">
-        <div class="text-center text-muted" style="font-size:0.95rem;">
-            Desarrollado por: <strong id="developersNames">Oquendo, Vega y Viloria</strong>
-        </div>
-    </div>
+    
 
     <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -382,12 +373,11 @@
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
     <script type="module" src="js/mainApp.js"></script>
-    <!-- NUEVO: Métricas por perfil horario (día / noche) -->
     <div class="container py-4">
-        <div class="card shadow-sm p-4 mb-5">
+        <div class="card shadow-sm p-2 mb-4">
             <h5 class="mb-3">🕘 Métricas por perfil horario</h5>
             <p class="small text-muted">Genera métricas y visualizaciones (LDC, Consumo temporal y mapa de calor) filtradas por perfil horario: Día (06:00-17:59) o Noche (18:00-05:59).</p>
-            <div class="d-flex gap-2 align-items-center mb-3">
+            <div class="d-flex gap-2 align-items-center mb-2">
                 <label class="mb-0">Perfil:</label>
                 <select id="perfilHorarioSelect" class="form-select form-select-sm" style="max-width:180px;">
                     <option value="dia">Día (06:00 - 17:59)</option>
@@ -402,43 +392,44 @@
                 </div>
                 <button id="generarPerfilBtn" class="btn btn-primary btn-sm">Generar métricas por perfil</button>
             </div>
+            <div class="d-flex gap-2 flex-wrap justify-content-end mb-3">
+                <button id="exportFullReportBtn" class="btn btn-outline-success btn-sm">Descargar informe (PDF)</button>
+                <button id="exportPerfilBtn" class="btn btn-outline-primary btn-sm">Exportar PNG</button>
+                <button id="savePerfilPrefBtn" class="btn btn-outline-secondary btn-sm">Guardar preferencia</button>
+            </div>
 
-            <div id="perfilResults" class="mt-3">
-                <div class="row g-3">
+            <div id="perfilResults" class="mt-2">
+                <div class="row g-2">
                     <div class="col-lg-6">
-                        <div class="card p-3">
+                        <div class="card p-2">
                             <h6>LDC (perfil)</h6>
-                            <canvas id="ldcPerfilChart"></canvas>
+                            <canvas id="ldcPerfilChart" style="max-height:220px;width:100%;"></canvas>
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <div class="card p-3">
+                        <div class="card p-2">
                             <h6>Consumo temporal (perfil)</h6>
-                            <canvas id="temporalPerfilChart"></canvas>
+                            <canvas id="temporalPerfilChart" style="max-height:220px;width:100%;"></canvas>
                         </div>
                     </div>
                     <div class="col-lg-8">
-                        <div class="card p-3">
+                        <div class="card p-2">
                             <h6>Mapa de calor (perfil)</h6>
-                            <div id="heatmapPerfilDiv" style="height:380px;"></div>
+                            <div id="heatmapPerfilDiv" style="height:260px;"></div>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="d-flex flex-column gap-3">
-                            <div class="card p-3">
+                            <div class="card p-2 summary-profile-card">
                                 <h6>Resumen (perfil)</h6>
                                 <div class="mt-2">
                                     <div> Energía total: <strong id="resEnergiaPerfil">-</strong> kWh</div>
                                     <div> Potencia media: <strong id="resPotenciaMediaPerfil">-</strong> kW</div>
                                     <div> Potencia pico: <strong id="resPotenciaPicoPerfil">-</strong> kW</div>
                                 </div>
-                                <div class="mt-3 d-flex gap-2 flex-wrap">
-                                    <button id="exportFullReportBtn" class="btn btn-outline-success btn-sm">Descargar informe (PDF)</button>
-                                    <button id="exportPerfilBtn" class="btn btn-outline-primary btn-sm">Exportar PNG</button>
-                                    <button id="savePerfilPrefBtn" class="btn btn-outline-secondary btn-sm">Guardar preferencia</button>
-                                </div>
                             </div>
-                            <div class="card p-3">
+
+                            <div class="card p-2">
                                 <h6>Notas</h6>
                                 <p class="small text-muted">Exporta las gráficas combinadas o guarda la preferencia de perfil para futuras sesiones.</p>
                             </div>
