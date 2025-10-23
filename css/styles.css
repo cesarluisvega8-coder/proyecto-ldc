@@ -82,7 +82,7 @@ body {
 }
 .appliance-card.selected {
     background: linear-gradient(135deg, #ffe066 60%, #43ea7c 100%);
-    border-color: #0d6efd;
+    border-color: #4be00b;
     box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
     z-index: 3;
 }
@@ -181,19 +181,69 @@ body {
     color: #e2e2e2 !important;
     border-color: #444 !important;
 }
+/* Reforzar contraste de botones comunes en secciones de carga/ingreso en modo oscuro */
+.dark-mode .btn-primary { background: #0d6efd !important; border-color: #0d6efd !important; color:#ffffff !important; }
+.dark-mode .btn-success { background: #22c55e !important; border-color: #22c55e !important; color:#0b1e12 !important; }
+.dark-mode .btn-outline-primary { border-color: #6ec5ff !important; color: #6ec5ff !important; background: transparent !important; }
+.dark-mode .btn-outline-success { border-color: #43ea7c !important; color: #43ea7c !important; background: transparent !important; }
+
+/* Inputs más visibles en modo oscuro (marco y fondo claros) */
+.dark-mode .form-control, .dark-mode .form-select {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border-color: #cbd5e1 !important; /* slate-300 */
+}
+.dark-mode .form-control:focus, .dark-mode .form-select:focus {
+    border-color: #60a5fa !important; /* blue-400 */
+    box-shadow: 0 0 0 3px rgba(96,165,250,0.35) !important;
+}
+
+/* Modal de rangos: alto contraste en oscuro */
+.dark-mode #rangesModal .modal-content { background: #ffffff !important; color: #111827 !important; }
+.dark-mode #rangesModal .modal-header { border-bottom-color: #e5e7eb !important; }
+.dark-mode #rangesModal .modal-footer { border-top-color: #e5e7eb !important; }
+.dark-mode #rangesModal .form-select { background: #ffffff !important; color:#111827 !important; border-color:#cbd5e1 !important; }
+.dark-mode #rangesModal .btn-secondary { background:#374151 !important; border-color:#374151 !important; color:#e5e7eb !important; }
+.dark-mode #rangesModal #saveRangesBtn.btn-success { background:#22c55e !important; border-color:#16a34a !important; color:#052e16 !important; }
 .dark-mode .appliance-card {
-    background: #23272b !important;
-    color: #e2e2e2 !important;
-    border-color: #444 !important;
+    /* Mantener recuadro blanco para que íconos negros sean visibles */
+    background: #ffffff !important;
+    color: #1f2937 !important; /* texto oscuro legible */
+    border-color: #e5e7eb !important; /* borde claro */
+}
+.dark-mode .appliance-card:hover, .dark-mode .appliance-card:focus {
+    background: #ffffff !important;
+    border-color: #03ca2b !important;
+    box-shadow: 0 0 0 2px rgba(3,202,43,0.35) inset, 0 6px 20px rgba(0,0,0,0.18);
 }
 .dark-mode .appliance-card.selected {
-    background: #0d6efd22 !important;
-    border-color: #0d6efd !important;
+    background: #f0f7ff !important; /* tono claro al seleccionar */
+    border-color: #03ca2b !important;
+    /* resalte más evidente en oscuro */
+    box-shadow: 0 0 0 2px rgba(3,202,43,0.85) inset, 0 0 14px rgba(3,202,43,0.45);
+    transform: scale(1.04);
 }
 .dark-mode .custom-alert {
     background: #23272b !important;
     color: #e2e2e2 !important;
     border-left-color: #0d6efd !important;
+}
+.dark-mode #detalleElectrodomestico {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border-color: #e5e7eb !important;
+}
+.dark-mode #detalleElectrodomestico .form-label {
+    color: #111827 !important;
+}
+.dark-mode #detalleElectrodomestico .form-control,
+.dark-mode #detalleElectrodomestico .form-select {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border-color: #cbd5e1 !important; /* slate-300 */
+}
+.dark-mode #detalleElectrodomestico .form-control::placeholder {
+    color: #6b7280 !important; /* gray-500 */
 }
 .dark-mode .card-header.bg-light {
     background: #23272b !important;
@@ -477,6 +527,31 @@ thead.table-light {
     border-color: #0d6efd;
     box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
     z-index: 3;
+}
+
+/* Icono y etiqueta dentro de las tarjetas de electrodomésticos */
+.appliance-card .appliance-icon {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    flex-shrink: 0;
+}
+
+.appliance-card .appliance-label {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    line-height: 1.1;
+    text-align: center;
+    max-width: 100%;
+    /* Evitar desbordes de texto: máximo 2 líneas */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
 }
 
 /* Centrar el header del panel de electrodomésticos esenciales */
