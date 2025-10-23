@@ -3,7 +3,7 @@
    - sincroniza datosManuales con la nueva vista día/semana en #contenedorTabla
    - respeta funciones externas si ya existen (procesarDatos, graficarLDC, graficarHeatmap, graficarConsumo)
 */
-
+hola
 // ------------------------
 // Estado global
 // ------------------------
