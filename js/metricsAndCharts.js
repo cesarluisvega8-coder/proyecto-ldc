@@ -312,11 +312,26 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
 }
 
 // Generar métricas y gráficas por perfil horario (dia / noche)
-export async function generarMetricasPorPerfil(datosManuales, perfil = 'dia', refs = {}){
-    // perfil: 'dia' -> horas 6..21 ; 'noche' -> 22..5
+export async function generarMetricasPorPerfil(datosManuales, perfil = 'dia', refs = {}, customHours) {
+    // perfil: 'dia' -> horas 06..17 ; 'noche' -> 18..05
     if(!Array.isArray(datosManuales) || datosManuales.length===0){ mostrarAlerta('No hay datos para procesar.','error'); return; }
     const isDia = perfil === 'dia';
-    const dayHours = isDia ? Array.from({length:16},(_,i)=>i+6) : [22,23,0,1,2,3,4,5];
+    let dayHours;
+    if (perfil === 'custom' && customHours && Number.isFinite(customHours.start) && Number.isFinite(customHours.end)) {
+        const start = Math.max(0, Math.min(23, Number(customHours.start)));
+        const end = Math.max(0, Math.min(23, Number(customHours.end)));
+        if (start === end) {
+            dayHours = Array.from({length:24}, (_,h)=>h);
+        } else if (start < end) {
+            dayHours = Array.from({length:end-start},(_,i)=>start+i);
+        } else {
+            const part1 = Array.from({length:24-start},(_,i)=>start+i);
+            const part2 = Array.from({length:end},(_,i)=>i);
+            dayHours = part1.concat(part2);
+        }
+    } else {
+        dayHours = isDia ? Array.from({length:12},(_,i)=>i+6) : [18,19,20,21,22,23,0,1,2,3,4,5];
+    }
     // construir matriz filtrada por hora: para cada carga tomar solo horas en dayHours
     const cargas = datosManuales.map(d=>d.Carga||'Sin nombre');
     const hourlyMatrix = datosManuales.map(d=>buildHourlyRow(d));

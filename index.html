@@ -220,7 +220,8 @@
         <!-- Begin metricsPanel -->
         <div class="card shadow-sm p-3 mb-4 metrics-card">
     <div class="solar-divider"></div>
-    <h5 class="text-center mb-3">📊 Métricas energéticas</h5>
+    <h5 class="text-center mb-2">📊 Métricas energéticas</h5>
+    <p class="small text-muted text-center mb-3">Estas métricas describen el consumo estimado de energía y potencia de la vivienda con base en los equipos ingresados.</p>
     
     <!-- Tabs para periodos -->
     <ul class="nav nav-tabs solar-tabs mb-3 justify-content-center" id="metricsTabs" role="tablist">
@@ -312,11 +313,11 @@
                       <option value="dia">Por día</option>
                       <option value="mes">Por mes</option>
                   </select>
-                  <select id="temporalModeSelect" class="form-select form-select-sm" style="min-width:180px;">
+                  <select id="temporalModeSelect" class="form-select form-select-sm" style="max-width:220px;">
                       <option value="suma">Suma por hora (actual)</option>
                       <option value="por-carga">Series por carga</option>
                   </select>
-                  <select id="temporalTopNSelect" class="form-select form-select-sm" style="min-width:180px;">
+                  <select id="temporalTopNSelect" class="form-select form-select-sm" style="max-width:120px;">
                       <option value="0">All</option>
                       <option value="5">Top 5</option>
                       <option value="10">Top 10</option>
@@ -383,12 +384,12 @@
     <div class="container py-4">
         <div class="card shadow-sm p-4 mb-5">
             <h5 class="mb-3">🕘 Métricas por perfil horario</h5>
-            <p class="small text-muted">Genera métricas y visualizaciones (LDC, Consumo temporal y mapa de calor) filtradas por perfil horario: Día (06:00-21:59) o Noche (22:00-05:59).</p>
+            <p class="small text-muted">Genera métricas y visualizaciones (LDC, Consumo temporal y mapa de calor) filtradas por perfil horario: Día (06:00-17:59) o Noche (18:00-05:59).</p>
             <div class="d-flex gap-2 align-items-center mb-3">
                 <label class="mb-0">Perfil:</label>
                 <select id="perfilHorarioSelect" class="form-select form-select-sm" style="max-width:180px;">
-                    <option value="dia">Día (06:00 - 21:59)</option>
-                    <option value="noche">Noche (22:00 - 05:59)</option>
+                    <option value="dia">Día (06:00 - 17:59)</option>
+                    <option value="noche">Noche (18:00 - 05:59)</option>
                     <option value="custom">Personalizado</option>
                 </select>
                 <div id="customPerfilControls" class="d-none align-items-center gap-2">
