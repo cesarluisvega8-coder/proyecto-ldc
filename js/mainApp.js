@@ -300,11 +300,19 @@ window.addEventListener('DOMContentLoaded', () => {
                         headers.forEach((h,i)=>{ pdf.text(h, x, y+5); x+=colWidths[i]; });
                         return y+rowHeight;
                     }
+
+                    // Render filas (limitado a 50 registros para PDF)
                     yPos = dibujarEncabezadoTabla(yPos);
-                    pdf.setTextColor(...colors.text); pdf.setFont(undefined,'normal');
-                    (window.datosManuales||[]).forEach((d,i)=>{
-                        if (yPos > pageHeight - 40){ currentPage++; pdf.addPage(); agregarEncabezado(currentPage); yPos = margin + 20; yPos = dibujarEncabezadoTabla(yPos); }
-                        if (i % 2 === 0){ pdf.setFillColor(...colors.lightGray); pdf.rect(margin, yPos, contentWidth, rowHeight, 'F'); }
+                    const allRows = (window.datosManuales||[]);
+                    const totalRows = allRows.length;
+                    const rows = allRows.slice(0, 50);
+                    if(totalRows > 50){
+                        pdf.setFontSize(8); pdf.setFont(undefined,'normal'); pdf.setTextColor(120,120,120);
+                        pdf.text(`Mostrando 50 de ${totalRows} registros.`, margin, yPos + 5);
+                        yPos += 10; // dar espacio a la nota
+                        pdf.setFontSize(9); pdf.setTextColor(...colors.text); pdf.setFont(undefined,'normal');
+                    }
+                    rows.forEach((d,i)=>{
                         let x=margin+2;
                         const rangosTexto = Array.isArray(d.Rangos) && d.Rangos.length>0 ? d.Rangos.map(r=>`${r.inicio}-${r.fin}h`).join(', ') : (d.HoraInicio!=null?`${d.HoraInicio}-${d.HoraFin}h`:'-');
                         const fila=[ String(i+1), d.Carga||'-', Number(d.Potencia_W||0).toFixed(0), parseInt(d.HorasEncendido||0), Number(d.Energia_kWh||0).toFixed(2), rangosTexto ];
