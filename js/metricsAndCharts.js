@@ -4,6 +4,23 @@ import { mostrarAlerta } from './utils.js';
 
 const monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
+// Detecta modo oscuro y provee colores para ejes, ticks, grid y leyendas
+function isDarkMode(){
+    try{ return document.body.classList.contains('dark-mode'); }catch(_){ return false; }
+}
+function chartTheme(){
+    const dark = isDarkMode();
+    return {
+        dark,
+        grid: dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+        ticks: dark ? '#e5e7eb' : '#374151',
+        title: dark ? '#e5e7eb' : '#111827',
+        legend: dark ? '#e5e7eb' : '#111827',
+        paper: dark ? '#181a1b' : '#ffffff',
+        plot: dark ? '#181a1b' : '#ffffff'
+    };
+}
+
 function buildHourlyRow(d) {
     const row = new Array(24).fill(0);
     const potKw = Number(d.Potencia_W || 0) / 1000;
@@ -103,6 +120,7 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
         const porcentaje = potOrdenadas.map((_,i)=> ((i+1)/potOrdenadas.length)*100);
         const ctx = document.getElementById('ldcChart').getContext('2d');
         if (ldcChartRef.current) ldcChartRef.current.destroy();
+        const theme = chartTheme();
         ldcChartRef.current = new Chart(ctx, {
             type: 'line',
             data: {
@@ -120,10 +138,10 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false } },
+                plugins: { legend: { display: false, labels: { color: theme.legend } } },
                 scales: {
-                    x: { title: { display: true, text: 'Duración (% tiempo)' } },
-                    y: { title: { display: true, text: 'Potencia (kW)' } }
+                    x: { title: { display: true, text: 'Duración (% tiempo)', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } },
+                    y: { title: { display: true, text: 'Potencia (kW)', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } }
                 }
             }
         });
@@ -133,6 +151,7 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
         const sorted = monthlyPerCarga.slice().sort((a,b)=>b-a);
         const ctx = document.getElementById('ldcChart').getContext('2d');
         if (ldcChartRef.current) ldcChartRef.current.destroy();
+        const theme = chartTheme();
         ldcChartRef.current = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -147,8 +166,11 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { title: { display: true, text: 'kWh/mes' } } }
+                plugins: { legend: { display: false, labels: { color: theme.legend } } },
+                scales: {
+                    x: { ticks:{ color: theme.ticks }, grid:{ color: theme.grid } },
+                    y: { title: { display: true, text: 'kWh/mes', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } }
+                }
             }
         });
     }
@@ -179,14 +201,18 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
                 pointRadius: 2
             }));
             if (window.temporalChartRef) window.temporalChartRef.destroy();
+            const theme = chartTheme();
             window.temporalChartRef = new Chart(temporalCtx, {
                 type: 'line',
                 data: { labels, datasets },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth:10 } }, tooltip: { mode: 'nearest' } },
+                    plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth:10, color: theme.legend } }, tooltip: { mode: 'nearest' } },
                     interaction: { mode: 'nearest', intersect: false },
-                    scales: { x: { title: { display: true, text: 'Hora' } }, y: { title: { display: true, text: 'Potencia (kW)' } } }
+                    scales: {
+                        x: { title: { display: true, text: 'Hora', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } },
+                        y: { title: { display: true, text: 'Potencia (kW)', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } }
+                    }
                 },
                 plugins: [legendHighlightPlugin]
             });
@@ -194,6 +220,7 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
             // Suma por hora (actual)
             const data = hourlyTotals.slice();
             if (window.temporalChartRef) window.temporalChartRef.destroy();
+            const theme = chartTheme();
             window.temporalChartRef = new Chart(temporalCtx, {
                 type: 'line',
                 data: {
@@ -213,11 +240,11 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+                    plugins: { legend: { display: false, labels: { color: theme.legend } }, tooltip: { mode: 'index', intersect: false } },
                     interaction: { mode: 'index', intersect: false },
                     scales: {
-                        x: { title: { display: true, text: 'Hora' } },
-                        y: { title: { display: true, text: 'Potencia (kW)' } }
+                        x: { title: { display: true, text: 'Hora', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } },
+                        y: { title: { display: true, text: 'Potencia (kW)', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } }
                     }
                 }
             });
@@ -226,6 +253,7 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
         const labels = monthNames;
         const data = monthlyTotals.map(v=>Number(v.toFixed(2)));
         if (window.temporalChartRef) window.temporalChartRef.destroy();
+        const theme = chartTheme();
         window.temporalChartRef = new Chart(temporalCtx, {
             type: 'bar',
             data: {
@@ -240,10 +268,10 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false } },
+                plugins: { legend: { display: false, labels: { color: theme.legend } } },
                 scales: {
-                    x: { title: { display: true, text: 'Mes' } },
-                    y: { title: { display: true, text: 'Energía (kWh)' } }
+                    x: { title: { display: true, text: 'Mes', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } },
+                    y: { title: { display: true, text: 'Energía (kWh)', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } }
                 }
             }
         });
@@ -254,8 +282,14 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
     if (periodo === 'dia') {
         const z = hourlyMatrix.map(row => row.map(v=>Number(v.toFixed(4))));
         const x = Array.from({length:24},(_,i)=>i);
+        const th = chartTheme();
         const data = [{ z, x, y: yNames, type:'heatmap', colorscale:'Jet', hovertemplate:'Hora: %{x}<br>Carga: %{y}<br>Potencia: %{z:.2f} kW<extra></extra>' }];
-        const layout = { title:'Mapa de calor — Potencia vs Hora (kW)', xaxis:{title:'Hora del día'}, yaxis:{title:'Carga', automargin:true}, margin:{l:140,t:40} };
+        const layout = {
+            title:'Mapa de calor — Potencia vs Hora (kW)',
+            xaxis:{ title:{text:'Hora del día', font:{color: th.title}}, tickfont:{color: th.ticks}, gridcolor: th.grid },
+            yaxis:{ title:{text:'Carga', font:{color: th.title}}, tickfont:{color: th.ticks}, gridcolor: th.grid, automargin:true },
+            margin:{l:140,t:40}, paper_bgcolor: th.paper, plot_bgcolor: th.plot, font:{color: th.title}
+        };
         Plotly.react('heatmapDiv', data, layout, {responsive:true});
     } else {
         // monthly heatmap: for each carga compute monthly energy vector
@@ -263,8 +297,14 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
             const daily = safeNumber(d.Energia_kWh) || (safeNumber(d.Potencia_W)/1000 * safeNumber(d.HorasEncendido));
             return monthNames.map((_,mi)=> Number((daily * 30 * seasonal[mi]).toFixed(3)));
         });
+        const th2 = chartTheme();
         const data = [{ z, x: monthNames, y: yNames, type:'heatmap', colorscale:'Jet', hovertemplate:'Mes: %{x}<br>Carga: %{y}<br>Energía: %{z:.2f} kWh<extra></extra>' }];
-        const layout = { title:'Mapa de calor — Energía por mes (kWh)', xaxis:{title:'Mes'}, yaxis:{title:'Carga', automargin:true}, margin:{l:140,t:40} };
+        const layout = {
+            title:'Mapa de calor — Energía por mes (kWh)',
+            xaxis:{ title:{text:'Mes', font:{color: th2.title}}, tickfont:{color: th2.ticks}, gridcolor: th2.grid },
+            yaxis:{ title:{text:'Carga', font:{color: th2.title}}, tickfont:{color: th2.ticks}, gridcolor: th2.grid, automargin:true },
+            margin:{l:140,t:40}, paper_bgcolor: th2.paper, plot_bgcolor: th2.plot, font:{color: th2.title}
+        };
         Plotly.react('heatmapDiv', data, layout, {responsive:true});
     }
 
@@ -294,10 +334,18 @@ export async function generarMetricasPorPerfil(datosManuales, perfil = 'dia', re
         if(ldcCtx){
             const ctx = (ldcCtx.getContext)? ldcCtx.getContext('2d') : document.getElementById('ldcPerfilChart').getContext('2d');
             if(window._ldcPerfil) window._ldcPerfil.destroy();
+            const themeP = chartTheme();
             window._ldcPerfil = new Chart(ctx, {
                 type: 'line',
                 data: { labels: sorted.map((_,i)=>((i+1)/sorted.length*100).toFixed(0)+'%'), datasets:[{ label:'LDC perfil', data: sorted, borderColor:'#0d6efd', backgroundColor:'rgba(13,110,253,0.08)', fill:true }] },
-                options: { responsive:true, plugins:{ legend:{display:false} } }
+                options: {
+                    responsive:true,
+                    plugins:{ legend:{display:false, labels:{ color: themeP.legend } } },
+                    scales:{
+                        x:{ ticks:{ color: themeP.ticks }, grid:{ color: themeP.grid }, title:{ display:true, text:'Duración (% tiempo)', color: themeP.title } },
+                        y:{ ticks:{ color: themeP.ticks }, grid:{ color: themeP.grid }, title:{ display:true, text:'Potencia (kW)', color: themeP.title } }
+                    }
+                }
             });
         }
     }catch(e){ console.error('Error dibujando LDC perfil',e); }
@@ -309,10 +357,18 @@ export async function generarMetricasPorPerfil(datosManuales, perfil = 'dia', re
             const ctx = (tempEl.getContext)? tempEl.getContext('2d') : document.getElementById('temporalPerfilChart').getContext('2d');
             if(window._temporalPerfil) window._temporalPerfil.destroy();
             const labels = dayHours.map(h=>String(h).padStart(2,'0')+':00');
+            const themeTP = chartTheme();
             window._temporalPerfil = new Chart(ctx, {
                 type: 'bar',
                 data: { labels, datasets:[{ label:'Potencia (kW)', data: filteredHourlyTotals, backgroundColor:'rgba(67,234,124,0.9)' }] },
-                options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ x:{title:{display:true,text:'Hora'}}, y:{title:{display:true,text:'Potencia (kW)'}} } }
+                options: {
+                    responsive:true,
+                    plugins:{ legend:{display:false, labels:{ color: themeTP.legend } } },
+                    scales:{
+                        x:{ title:{display:true,text:'Hora', color: themeTP.title}, ticks:{ color: themeTP.ticks }, grid:{ color: themeTP.grid } },
+                        y:{ title:{display:true,text:'Potencia (kW)', color: themeTP.title}, ticks:{ color: themeTP.ticks }, grid:{ color: themeTP.grid } }
+                    }
+                }
             });
         }
     }catch(e){ console.error('Error dibujando temporal perfil',e); }
@@ -322,8 +378,14 @@ export async function generarMetricasPorPerfil(datosManuales, perfil = 'dia', re
         const heatDiv = refs.heat || document.getElementById('heatmapPerfilDiv');
         if(heatDiv){
             const z = hourlyMatrix.map(row => dayHours.map(h => Number((row[h]||0).toFixed(4))));
+            const thp = chartTheme();
             const data = [{ z, x: dayHours.map(h=>String(h).padStart(2,'0')+':00'), y: cargas, type:'heatmap', colorscale:'Jet', hovertemplate:'Hora: %{x}<br>Carga: %{y}<br>Potencia: %{z:.2f} kW<extra></extra>' }];
-            const layout = { title:`Mapa de calor — ${isDia? 'Día':'Noche'}`, xaxis:{title:'Hora'}, yaxis:{title:'Carga', automargin:true}, margin:{l:140,t:40} };
+            const layout = {
+                title:`Mapa de calor — ${isDia? 'Día':'Noche'}`,
+                xaxis:{ title:{text:'Hora', font:{color: thp.title}}, tickfont:{color: thp.ticks}, gridcolor: thp.grid },
+                yaxis:{ title:{text:'Carga', font:{color: thp.title}}, tickfont:{color: thp.ticks}, gridcolor: thp.grid, automargin:true },
+                margin:{l:140,t:40}, paper_bgcolor: thp.paper, plot_bgcolor: thp.plot, font:{color: thp.title}
+            };
             Plotly.react(heatDiv, data, layout, {responsive:true});
         }
     }catch(e){ console.error('Error dibujando heatmap perfil',e); }
