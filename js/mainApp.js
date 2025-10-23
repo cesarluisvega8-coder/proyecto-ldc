@@ -20,8 +20,10 @@ window.addEventListener('DOMContentLoaded', () => {
         temporalTab.addEventListener('shown.bs.tab', () => applyPeriod());
         temporalTab.addEventListener('click', () => { setTimeout(() => applyPeriod(), 60); });
     }
-    // Re-dibujar al cambiar tema
-    document.body.addEventListener('classChange', () => { applyPeriod(); });
+    // Re-dibujar al cambiar tema, solo si hay datos cargados
+    document.body.addEventListener('classChange', () => {
+        if ((window.datosManuales||[]).length > 0) { applyPeriod(); }
+    });
     // ...existing code...
     // NUEVO: Estructura de datos para múltiples rangos por carga
     // Cada carga tendrá: { Carga, Potencia_W, Rangos: [{inicio, fin}], Energia_kWh }
@@ -380,16 +382,33 @@ window.addEventListener('DOMContentLoaded', () => {
     const periodSelect = document.getElementById('periodSelect');
     function applyPeriod() {
         const periodo = periodSelect ? periodSelect.value : 'dia';
+        // Ocultar/mostrar TopN según modo temporal
+        const temporalModeSelect = document.getElementById('temporalModeSelect');
+        const temporalTopNSelect = document.getElementById('temporalTopNSelect');
+        if (temporalModeSelect && temporalTopNSelect) {
+            const showTopN = temporalModeSelect.value === 'por-carga';
+            temporalTopNSelect.disabled = !showTopN;
+            temporalTopNSelect.style.opacity = showTopN ? '1' : '0.55';
+            temporalTopNSelect.title = showTopN ? '' : 'Disponible solo en "Series por carga"';
+        }
+        // Evitar alertas si no hay datos
+        if (!window.datosManuales || window.datosManuales.length === 0) {
+            return; // no procesar ni recalcular métricas
+        }
         procesarYGraficar(window.datosManuales, window.ldcChartRef, periodo);
         // actualizar métricas (ya se calculan por defecto como dia/mes/anio en metricsCalculator)
         actualizarMetricas(window.datosManuales);
     }
+
     if (periodSelect) periodSelect.addEventListener('change', applyPeriod);
     // re-render cuando cambia el modo temporal (suma / por-carga)
     const temporalModeSelect = document.getElementById('temporalModeSelect');
     if (temporalModeSelect) temporalModeSelect.addEventListener('change', applyPeriod);
     const temporalTopNSelect = document.getElementById('temporalTopNSelect');
     if (temporalTopNSelect) temporalTopNSelect.addEventListener('change', applyPeriod);
+    // Inicial: set visibility state for TopN
+    applyPeriod();
+
     // actualizar métricas iniciales
     actualizarMetricas(window.datosManuales);
 
@@ -538,29 +557,60 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Generar métricas por perfil horario
     const perfilBtn = document.getElementById('generarPerfilBtn');
-    if(perfilBtn){
-        perfilBtn.addEventListener('click', async () => {
-            const perfilEl = document.getElementById('perfilHorarioSelect');
-            const perfil = (perfilEl||{}).value || 'dia';
-            const refs = { ldc: document.getElementById('ldcPerfilChart'), temporal: document.getElementById('temporalPerfilChart'), heat: document.getElementById('heatmapPerfilDiv') };
-            // show spinner overlay
-            showProfileSpinner(true);
-            // custom hours
-            let customHours = null;
-            if(perfil === 'custom'){
-                const start = Number(document.getElementById('customStartHour').value);
-                const end = Number(document.getElementById('customEndHour').value);
-                customHours = { start, end };
+    const perfilEl = document.getElementById('perfilHorarioSelect');
+    const customControls = document.getElementById('customPerfilControls');
+    const customStartHour = document.getElementById('customStartHour');
+    const customEndHour = document.getElementById('customEndHour');
+
+    // Rellenar selects de horas personalizadas si existen
+    function fillCustomHourSelects(){
+        if(!customStartHour || !customEndHour) return;
+        if(customStartHour.options.length === 0){
+            for(let h=0; h<24; h++){
+                const label = String(h).padStart(2,'0')+':00';
+                const o1 = document.createElement('option'); o1.value = h; o1.textContent = label; customStartHour.appendChild(o1);
+                const o2 = document.createElement('option'); o2.value = h; o2.textContent = label; customEndHour.appendChild(o2);
             }
-            const summary = await generarMetricasPorPerfil(window.datosManuales, perfil, refs, customHours);
-            if(summary){
-                document.getElementById('resEnergiaPerfil').textContent = summary.energiaTotal.toFixed(3);
-                document.getElementById('resPotenciaMediaPerfil').textContent = summary.potenciaMedia.toFixed(3);
-                document.getElementById('resPotenciaPicoPerfil').textContent = summary.potenciaPico.toFixed(3);
-            }
-            showProfileSpinner(false);
+            customStartHour.value = '6';
+            customEndHour.value = '18';
+        }
+    }
+    fillCustomHourSelects();
+
+    async function generatePerfilFromUI(showSpinner=false){
+        if(!Array.isArray(window.datosManuales) || window.datosManuales.length===0){ return; }
+        const perfil = (perfilEl||{}).value || 'dia';
+        const refs = { ldc: document.getElementById('ldcPerfilChart'), temporal: document.getElementById('temporalPerfilChart'), heat: document.getElementById('heatmapPerfilDiv') };
+        if(showSpinner) showProfileSpinner(true);
+        let customHours = null;
+        if(perfil === 'custom' && customStartHour && customEndHour){
+            const start = Number(customStartHour.value);
+            const end = Number(customEndHour.value);
+            customHours = { start, end };
+        }
+        const summary = await generarMetricasPorPerfil(window.datosManuales, perfil, refs, customHours);
+        if(summary){
+            document.getElementById('resEnergiaPerfil').textContent = summary.energiaTotal.toFixed(3);
+            document.getElementById('resPotenciaMediaPerfil').textContent = summary.potenciaMedia.toFixed(3);
+            document.getElementById('resPotenciaPicoPerfil').textContent = summary.potenciaPico.toFixed(3);
+        }
+        if(showSpinner) showProfileSpinner(false);
+    }
+
+    // Botón: con spinner
+    if(perfilBtn){ perfilBtn.addEventListener('click', () => generatePerfilFromUI(true)); }
+
+    // Cambio de perfil: actualizar automáticamente y mostrar/ocultar controles custom
+    if(perfilEl){
+        perfilEl.addEventListener('change', () => {
+            if(customControls){ customControls.classList.toggle('d-none', perfilEl.value !== 'custom'); }
+            generatePerfilFromUI(false);
         });
     }
+
+    // Cambio de horas personalizadas: actualizar automáticamente
+    if(customStartHour){ customStartHour.addEventListener('change', () => generatePerfilFromUI(false)); }
+    if(customEndHour){ customEndHour.addEventListener('change', () => generatePerfilFromUI(false)); }
 
     // Exportar imagen combinada de las tres visualizaciones
     const exportBtn = document.getElementById('exportPerfilBtn');
