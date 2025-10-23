@@ -3,7 +3,6 @@
    - sincroniza datosManuales con la nueva vista día/semana en #contenedorTabla
    - respeta funciones externas si ya existen (procesarDatos, graficarLDC, graficarHeatmap, graficarConsumo)
 */
-hola
 // ------------------------
 // Estado global
 // ------------------------
@@ -290,7 +289,8 @@ function recalcularIdx(idx) {
 // Añadir manual (formulario)
 // ------------------------
 const addManualBtn = document.getElementById("addManualBtn");
-if (addManualBtn) {
+// Solo activar este handler legacy si existen los campos horaInicio/horaFin del flujo antiguo
+if (addManualBtn && document.getElementById("horaInicio") && document.getElementById("horaFin")) {
   addManualBtn.addEventListener("click", () => {
     const nombre = document.getElementById("manualCarga")?.value?.trim();
     const potencia = parseFloat(document.getElementById("manualPotencia")?.value || NaN);
@@ -627,7 +627,8 @@ function actualizarDuracionManual() {
 selectInicio?.addEventListener("change", actualizarDuracionManual);
 selectFin?.addEventListener("change", actualizarDuracionManual);
 
-// Al presionar “Agregar”
+// Al presionar “Agregar” (solo si existen los campos manualInicio/manualFin/manualTotal del flujo antiguo)
+if (document.getElementById("manualInicio") && document.getElementById("manualFin") && document.getElementById("manualTotal")) {
 document.getElementById("addManualBtn")?.addEventListener("click", () => {
   const carga = document.getElementById("manualCarga").value.trim();
   const potencia = parseFloat(document.getElementById("manualPotencia").value);
@@ -667,6 +668,7 @@ document.getElementById("addManualBtn")?.addEventListener("click", () => {
   selectFin.value = "";
   document.getElementById("manualTotal").value = "";
 });
+}
 
 
 

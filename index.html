@@ -88,7 +88,7 @@
         <!-- Ingreso manual -->
         <div class="card shadow-sm p-4 mb-4">
             <h5>✍️ Ingreso manual</h5>
-            <p class="small-muted mb-2">Ingresa el nombre, potencia y el intervalo de tiempo (hora de inicio y hora de fin). El sistema calculará automáticamente la duración total.</p>
+            <p class="small-muted mb-2">Ingresa el nombre y la potencia. El horario se definirá en el pop-up al presionar Agregar.</p>
 
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
@@ -98,18 +98,6 @@
                 <div class="col-md-2">
                     <label class="form-label small mb-0">Potencia (W)</label>
                     <input id="manualPotencia" type="number" class="form-control" placeholder="Ej: 1200">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small mb-0">Hora inicio</label>
-                    <select id="manualInicio" class="form-select"></select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small mb-0">Hora fin</label>
-                    <select id="manualFin" class="form-select"></select>
-                </div>
-                <div class="col-md-1">
-                    <label class="form-label small mb-0">Total (h)</label>
-                    <input id="manualTotal" type="text" readonly class="form-control text-center">
                 </div>
                 <div class="col-md-2 d-grid">
                     <button id="addManualBtn" class="btn btn-success">Agregar</button>

@@ -68,15 +68,17 @@ window.addEventListener('DOMContentLoaded', () => {
     window.datosManuales = [];
     window.ldcChartRef = { current: null };
 
-    // Selects
+    // Selects (manual time inputs may not exist if using popup-only flow)
     const selectInicio = document.getElementById('manualInicio');
     const selectFin = document.getElementById('manualFin');
     const totalInput = document.getElementById('manualTotal');
-    llenarSelectHoras(selectInicio, selectFin, totalInput);
-    selectInicio.addEventListener('change', () => actualizarTotalInterfaz(selectInicio, selectFin, totalInput));
-    selectFin.addEventListener('change', () => actualizarTotalInterfaz(selectInicio, selectFin, totalInput));
-    selectInicio.addEventListener('input', () => actualizarTotalInterfaz(selectInicio, selectFin, totalInput));
-    selectFin.addEventListener('input', () => actualizarTotalInterfaz(selectInicio, selectFin, totalInput));
+    if (selectInicio && selectFin && totalInput) {
+        llenarSelectHoras(selectInicio, selectFin, totalInput);
+        selectInicio.addEventListener('change', () => actualizarTotalInterfaz(selectInicio, selectFin, totalInput));
+        selectFin.addEventListener('change', () => actualizarTotalInterfaz(selectInicio, selectFin, totalInput));
+        selectInicio.addEventListener('input', () => actualizarTotalInterfaz(selectInicio, selectFin, totalInput));
+        selectFin.addEventListener('input', () => actualizarTotalInterfaz(selectInicio, selectFin, totalInput));
+    }
 
     // Tabla
     const tbody = document.querySelector('#tablaManual tbody');
