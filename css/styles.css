@@ -19,6 +19,25 @@ body {
     vertical-align: middle;
 }
 
+/* Header title group: keep original type, color and nudge slightly left */
+.solar-header-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    transform: translateX(-10px);
+}
+.solar-title {
+    font-size: 2.1rem;
+    font-weight: 600;
+    color: #1b5e20;
+}
+.solar-subtitle {
+    font-size: 1.1rem;
+    color: #0d6efd;
+    margin-top: 0.35rem;
+}
+
 .card {
     border-radius: 1.5rem !important;
     box-shadow: 0 4px 24px rgba(0,0,0,0.07);
@@ -287,6 +306,19 @@ canvas {
     min-height: 520px;
     /* Evita saltos de tamaño al cambiar */
     transition: height 0.3s ease;
+}
+
+/* Reduce altura solo en la tarjeta de métricas para evitar espacio vacío */
+.metrics-card .tab-content {
+    min-height: 240px;
+}
+
+@media (min-width: 992px) {
+    .metrics-card .tab-content { min-height: 260px; }
+}
+
+@media (min-width: 1200px) {
+    .metrics-card .tab-content { min-height: 280px; }
 }
 
 
