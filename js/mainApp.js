@@ -89,6 +89,292 @@ window.addEventListener('DOMContentLoaded', () => {
             await editRangesForRow(idx);
         });
     }
+
+    // Exportar informe PDF completo
+    const exportFullBtn = document.getElementById('exportFullReportBtn');
+    if (exportFullBtn) {
+        exportFullBtn.addEventListener('click', async () => {
+            try {
+                // Show progress indicator
+                showProfileSpinner(true);
+                const spinnerTextEl = document.querySelector('#profileSpinner .profile-spinner div:nth-child(2)');
+                if (spinnerTextEl) spinnerTextEl.textContent = 'Generando informe PDF...';
+
+                // helper to ensure jsPDF loaded (local UMD or CDN fallback)
+                async function ensureJsPDF(){
+                    let jspdfLib = window.jspdf || window.jsPDF || (window.jspdf && window.jspdf.jsPDF) || null;
+                    let Ctor = jspdfLib && (jspdfLib.jsPDF || jspdfLib);
+                    if (Ctor) return Ctor;
+                    // load from CDN fallback
+                    await new Promise((resolve, reject) => {
+                        const s = document.createElement('script');
+                        s.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+                        s.onload = () => resolve();
+                        s.onerror = reject;
+                        document.head.appendChild(s);
+                    });
+                    jspdfLib = window.jspdf || window.jsPDF || (window.jspdf && window.jspdf.jsPDF) || null;
+                    Ctor = jspdfLib && (jspdfLib.jsPDF || jspdfLib);
+                    return Ctor || null;
+                }
+
+                // jsPDF constructor from UMD (with fallback)
+                const jsPDFConstructor = await ensureJsPDF();
+                if(!jsPDFConstructor){
+                    mostrarAlerta('jsPDF no disponible en la página.', 'error');
+                    showProfileSpinner(false);
+                    return;
+                }
+
+                // Utilities for ensuring charts are rendered
+                const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+                const isHeatmapDrawn = () => {
+                    const hd = document.getElementById('heatmapDiv');
+                    if (!hd) return false;
+                    // Plotly draws SVG inside the target div
+                    return !!hd.querySelector('svg, canvas');
+                };
+                const ensureChartsRendered = async () => {
+                    try {
+                        // ensure data processed and charts drawn
+                        const periodSelect = document.getElementById('periodSelect');
+                        const periodo = periodSelect ? periodSelect.value : 'dia';
+                        if (typeof procesarYGraficar === 'function') {
+                            procesarYGraficar(window.datosManuales || [], window.ldcChartRef || {current:null}, periodo);
+                        }
+                        await sleep(150);
+                    } catch (e) { console.warn('ensureChartsRendered warn', e); }
+                };
+                const showTabAndWait = async (tabId) => {
+                    const tabBtn = document.getElementById(tabId);
+                    if (!tabBtn) return;
+                    try {
+                        const tab = new bootstrap.Tab(tabBtn);
+                        tab.show();
+                        await sleep(200);
+                    } catch(e) { console.warn('showTab warn', e); }
+                };
+                // Remember current active chart tab
+                const activeTab = document.querySelector('#chartTabs .nav-link.active');
+                const activeTabId = activeTab ? activeTab.id : null;
+
+                // Pre-render charts
+                if (spinnerTextEl) spinnerTextEl.textContent = 'Preparando visualizaciones...';
+                await ensureChartsRendered();
+
+                // Build PDF using Sunalyze template structure
+                async function buildSunalyzeReport(jsPDFConstructor){
+                    const pdf = new jsPDFConstructor({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+                    const margin = 15;
+                    const contentWidth = pageWidth - (margin * 2);
+                    let currentPage = 1;
+                    let yPos = margin;
+
+                    const colors = {
+                        primary: [255,165,0],
+                        secondary: [30,58,95],
+                        text: [51,51,51],
+                        lightGray: [240,240,240],
+                        background: [250,246,240]
+                    };
+
+                    // Load logo as DataURL to avoid CORS/path issues in addImage
+                    async function loadImageAsDataURL(path){
+                        try{
+                            // Try fetch -> blob -> dataURL
+                            const res = await fetch(path, { cache: 'no-cache' });
+                            if(!res.ok) throw new Error('fetch failed');
+                            const blob = await res.blob();
+                            return await new Promise((resolve)=>{
+                                const reader = new FileReader();
+                                reader.onload = () => resolve(reader.result);
+                                reader.readAsDataURL(blob);
+                            });
+                        }catch(e){
+                            try{
+                                // Fallback via Image element
+                                const img = await new Promise((res,rej)=>{ const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>res(im); im.onerror=rej; im.src=path+'?t='+(Date.now()); });
+                                const canvas=document.createElement('canvas'); canvas.width=img.width; canvas.height=img.height; const cx=canvas.getContext('2d'); cx.drawImage(img,0,0);
+                                return canvas.toDataURL('image/png');
+                            }catch(e2){ return null; }
+                        }
+                    }
+                    const logoPath = 'assets/icons/sunalyze_logo.png';
+                    const DISABLE_LOGO = false; // re-enable logo embedding
+                    const logoDataUrl = DISABLE_LOGO ? null : await loadImageAsDataURL(logoPath);
+
+                    // Safe addImage wrapper
+                    function safeAddImage(imgDataUrl, x, y, w, h, format='PNG'){
+                        try{
+                            if(typeof imgDataUrl === 'string' && imgDataUrl.startsWith('data:image/')){
+                                pdf.addImage(imgDataUrl, format, x, y, w, h);
+                                return true;
+                            }
+                        }catch(e){ console.warn('addImage failed', e); }
+                        return false;
+                    }
+
+                    function agregarEncabezado(numeroPagina){
+                        pdf.setPage(numeroPagina);
+                        // Header logo: smaller and slightly higher to avoid overlapping the separator line
+                        const logoW = 18, logoH = 18;
+                        const logoX = pageWidth - margin - logoW;
+                        const logoY = margin - 8; // raise logo a bit
+                        try { if(logoDataUrl){ if(!safeAddImage(logoDataUrl, logoX, logoY, logoW, logoH)) throw new Error('no-logo'); } else { throw new Error('no-logo'); } }
+                        catch(e){ pdf.setFillColor(...colors.primary); pdf.circle(pageWidth - margin - (logoW/2), margin + 3, 6, 'F'); }
+                        pdf.setFontSize(11); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
+                        pdf.text('INFORME DE ANÁLISIS ENERGÉTICO', margin, margin + 5);
+                        const fecha = new Date().toLocaleDateString('es-ES', {year:'numeric',month:'long',day:'numeric'});
+                        pdf.setFontSize(9); pdf.setFont(undefined,'normal'); pdf.setTextColor(...colors.text);
+                        pdf.text(fecha, margin, margin + 10);
+                        pdf.setDrawColor(...colors.primary); pdf.setLineWidth(0.5);
+                        pdf.line(margin, margin + 13, pageWidth - margin, margin + 13);
+                    }
+
+                    function agregarPieDePagina(numeroPagina, totalPaginas){
+                        pdf.setPage(numeroPagina);
+                        pdf.setFontSize(8); pdf.setTextColor(180,180,180); pdf.setFont(undefined,'italic');
+                        const dev = 'Desarrollado por: Oquendo, Vega y Viloria';
+                        pdf.text(dev, pageWidth/2, pageHeight - 5, {align:'center'});
+                        pdf.setFontSize(9); pdf.setTextColor(...colors.text); pdf.setFont(undefined,'normal');
+                        pdf.text(`Página ${numeroPagina} de ${totalPaginas}`, pageWidth - margin, pageHeight - 10, {align:'right'});
+                        try { if(logoDataUrl){ if(!safeAddImage(logoDataUrl, margin, pageHeight - 15, 12, 12)) throw new Error('no-logo'); } else { throw new Error('no-logo'); } }
+                        catch(e){ pdf.setFillColor(...colors.primary); pdf.circle(margin + 6, pageHeight - 9, 4, 'F'); }
+                    }
+
+                    // P1: Resumen ejecutivo y métricas
+                    agregarEncabezado(currentPage);
+                    yPos = margin + 20;
+                    pdf.setFontSize(16); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
+                    pdf.text('📊 Resumen Ejecutivo', margin, yPos); yPos += 12;
+
+                    const energiaTotal = (document.getElementById('energiaTotal_dia')||document.getElementById('energiaTotal')||{}).textContent || '-';
+                    const potenciaMedia = (document.getElementById('potenciaMedia_dia')||document.getElementById('potenciaMedia')||{}).textContent || '-';
+                    const potenciaPico = (document.getElementById('potenciaPico_dia')||document.getElementById('potenciaPico')||{}).textContent || '-';
+                    const numCargas = (window.datosManuales||[]).length;
+                    const metricas=[
+                        { titulo:'Energía Total Diaria', valor:`${energiaTotal} kWh`, icono:'⚡' },
+                        { titulo:'Potencia Media', valor:`${potenciaMedia} kW`, icono:'📈' },
+                        { titulo:'Potencia Pico', valor:`${potenciaPico} kW`, icono:'🔝' },
+                        { titulo:'Número de Cargas', valor:String(numCargas), icono:'🔌' }
+                    ];
+                    const cardWidth=(contentWidth-10)/2, cardHeight=25; let xPos=margin, cardY=yPos;
+                    metricas.forEach((m,idx)=>{
+                        if(idx===2){ xPos=margin; cardY+=cardHeight+5; }
+                        pdf.setFillColor(...colors.lightGray); pdf.roundedRect(xPos, cardY, cardWidth, cardHeight, 2, 2, 'F');
+                        pdf.setFontSize(10); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.text);
+                        pdf.text(`${m.icono} ${m.titulo}`, xPos+4, cardY+7);
+                        pdf.setFontSize(18); pdf.setTextColor(...colors.primary); pdf.text(String(m.valor), xPos+4, cardY+18);
+                        xPos+=cardWidth+5;
+                    });
+                    yPos = cardY + cardHeight + 15;
+
+                    // Tabla de cargas
+                    pdf.setFontSize(14); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
+                    pdf.text('📋 Detalle de Cargas', margin, yPos); yPos+=10;
+                    pdf.setFontSize(9);
+                    const colWidths=[12,55,28,22,28,35];
+                    const headers=['#','Carga','Potencia (W)','Horas','Energía (kWh)','Horarios'];
+                    const rowHeight=7;
+                    function dibujarEncabezadoTabla(y){
+                        // Mejor legibilidad: encabezado claro con texto negro
+                        pdf.setFillColor(...colors.lightGray); pdf.rect(margin, y, contentWidth, rowHeight, 'F');
+                        pdf.setTextColor(...colors.text); pdf.setFont(undefined,'bold'); let x=margin+2;
+                        headers.forEach((h,i)=>{ pdf.text(h, x, y+5); x+=colWidths[i]; });
+                        return y+rowHeight;
+                    }
+                    yPos = dibujarEncabezadoTabla(yPos);
+                    pdf.setTextColor(...colors.text); pdf.setFont(undefined,'normal');
+                    (window.datosManuales||[]).forEach((d,i)=>{
+                        if (yPos > pageHeight - 40){ currentPage++; pdf.addPage(); agregarEncabezado(currentPage); yPos = margin + 20; yPos = dibujarEncabezadoTabla(yPos); }
+                        if (i % 2 === 0){ pdf.setFillColor(...colors.lightGray); pdf.rect(margin, yPos, contentWidth, rowHeight, 'F'); }
+                        let x=margin+2;
+                        const rangosTexto = Array.isArray(d.Rangos) && d.Rangos.length>0 ? d.Rangos.map(r=>`${r.inicio}-${r.fin}h`).join(', ') : (d.HoraInicio!=null?`${d.HoraInicio}-${d.HoraFin}h`:'-');
+                        const fila=[ String(i+1), d.Carga||'-', Number(d.Potencia_W||0).toFixed(0), parseInt(d.HorasEncendido||0), Number(d.Energia_kWh||0).toFixed(2), rangosTexto ];
+                        fila.forEach((cell,idx)=>{ const text=String(cell); const maxW=colWidths[idx]-3; const lines=pdf.splitTextToSize(text, maxW); pdf.text(lines[0], x, yPos+5); x+=colWidths[idx]; });
+                        yPos += rowHeight;
+                    });
+
+                    // Nueva página: LDC
+                    currentPage++; pdf.addPage(); agregarEncabezado(currentPage); yPos = margin + 20;
+                    pdf.setFontSize(14); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
+                    pdf.text('📈 Curva de Duración de Carga (LDC)', margin, yPos); yPos+=5;
+                    pdf.setFontSize(9); pdf.setFont(undefined,'normal'); pdf.setTextColor(...colors.text);
+                    const descLDC = 'La curva LDC muestra la potencia demandada ordenada de mayor a menor y el porcentaje del tiempo que se mantiene cada nivel de potencia.';
+                    pdf.text(pdf.splitTextToSize(descLDC, contentWidth), margin, yPos+5); yPos+=15;
+                    try{
+                        const ldcCanvas = document.getElementById('ldcChart');
+                        if (ldcCanvas && ldcCanvas.width && ldcCanvas.height){
+                            const img = ldcCanvas.toDataURL('image/png',1.0);
+                            const imgH = Math.min((contentWidth * ldcCanvas.height)/Math.max(ldcCanvas.width,1), 120);
+                            safeAddImage(img, margin, yPos, contentWidth, imgH) && (yPos+=imgH+10);
+                        } else {
+                            pdf.text('(LDC no disponible para exportación)', margin, yPos); yPos+=10;
+                        }
+                    }catch(e){ console.warn('LDC capture failed', e); pdf.text('(LDC no disponible para exportación)', margin, yPos); yPos+=10; }
+
+                    // Nueva página: Heatmap
+                    currentPage++; pdf.addPage(); agregarEncabezado(currentPage); yPos = margin + 20;
+                    pdf.setFontSize(14); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
+                    pdf.text('🔥 Mapa de Calor - Distribución Horaria', margin, yPos); yPos+=5;
+                    pdf.setFontSize(9); pdf.setFont(undefined,'normal'); pdf.setTextColor(...colors.text);
+                    const descHeat = 'El mapa de calor visualiza la potencia demandada por hora del día. Colores cálidos indican mayor consumo; fríos, menor consumo.';
+                    pdf.text(pdf.splitTextToSize(descHeat, contentWidth), margin, yPos+5); yPos+=15;
+                    const heatDiv = document.getElementById('heatmapDiv');
+                    let heatImg = null;
+                    if (heatDiv){
+                        try{
+                            if (window.Plotly && typeof Plotly.toImage==='function'){
+                                const w=Math.max(heatDiv.clientWidth||600,600); const h=Math.max(heatDiv.clientHeight||360,360);
+                                heatImg = await Plotly.toImage(heatDiv,{format:'png',width:w,height:h,scale:2});
+                            }
+                        }catch(e){ /* fallback below */ }
+                        if (!heatImg){
+                            try{ const canvas = await html2canvas(heatDiv,{scale:2,useCORS:true,logging:false,backgroundColor:'#FFFFFF'}); heatImg = canvas.toDataURL('image/png',1.0);} catch(e){ heatImg=null; }
+                        }
+                    }
+                    if (heatImg){ const img = new Image(); await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src=heatImg;}); const imgH = Math.min((contentWidth * img.height)/Math.max(img.width,1), 120); safeAddImage(heatImg, margin, yPos, contentWidth, imgH) && (yPos+=imgH+10); }
+                    else { pdf.text('(No se pudo generar la imagen del mapa de calor)', margin, yPos); yPos+=10; }
+
+                    // Nueva página: Consumo temporal
+                    currentPage++; pdf.addPage(); agregarEncabezado(currentPage); yPos = margin + 20;
+                    pdf.setFontSize(14); pdf.setFont(undefined,'bold'); pdf.setTextColor(...colors.secondary);
+                    pdf.text('⚡ Análisis de Consumo Temporal', margin, yPos); yPos+=5;
+                    pdf.setFontSize(9); pdf.setFont(undefined,'normal'); pdf.setTextColor(...colors.text);
+                    const descTmp='Esta gráfica muestra la evolución del consumo eléctrico a lo largo del tiempo, permitiendo identificar tendencias y patrones de uso.';
+                    pdf.text(pdf.splitTextToSize(descTmp, contentWidth), margin, yPos+5); yPos+=15;
+                    try{
+                        const tempCanvas = document.getElementById('temporalChart');
+                        if (tempCanvas && tempCanvas.width && tempCanvas.height){
+                            const img=tempCanvas.toDataURL('image/png',1.0);
+                            const imgH=Math.min((contentWidth * tempCanvas.height)/Math.max(tempCanvas.width,1),120);
+                            safeAddImage(img, margin, yPos, contentWidth, imgH);
+                        } else {
+                            pdf.text('(Gráfica temporal no disponible para exportación)', margin, yPos);
+                        }
+                    }catch(e){ console.warn('Temporal capture failed', e); pdf.text('(Gráfica temporal no disponible para exportación)', margin, yPos); }
+
+                    // Pie de página y guardar
+                    const totalPages = pdf.internal.pages.length - 1;
+                    for (let i=1;i<=totalPages;i++){ agregarPieDePagina(i,totalPages); }
+                    const fecha = new Date();
+                    const nombreArchivo = `Informe_Sunalyze_${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}.pdf`;
+                    pdf.save(nombreArchivo);
+                }
+
+                // Run template builder
+                await buildSunalyzeReport(jsPDFConstructor);
+                mostrarAlerta('Informe PDF exportado.', 'success');
+            } catch (err) {
+                console.error('Error generando informe PDF', err);
+                mostrarAlerta('Error generando informe PDF.', 'error');
+            } finally {
+                showProfileSpinner(false);
+            }
+        });
+    }
     renderTabla();
     // period selector (dia/mes) afecta graficas
     const periodSelect = document.getElementById('periodSelect');
