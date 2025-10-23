@@ -767,5 +767,5 @@ document.getElementById("addManualBtn")?.addEventListener("click", () => {
     mostrarAlerta(`${cantidad} ${nombre}${cantidad>1?"s":""} agregado${cantidad>1?"s":""}.`,"success");
     document.querySelectorAll(".appliance-card").forEach(c=>c.classList.remove("selected"));
     detalle.classList.add("d-none");
-  });hola
+  });
 
