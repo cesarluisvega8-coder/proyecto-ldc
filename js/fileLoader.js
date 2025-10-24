@@ -29,6 +29,7 @@ export async function handleFileLoad(inputFile, datosManuales, actualizarTablaMa
 }
 
 export function procesarMatrizComoLineaBase(rows, datosManuales, actualizarTablaManual) {
+
     let headerIndex = -1;
     for (let i = 0; i < Math.min(8, rows.length); i++) {
         const r = rows[i].map(c => (c || '').toString().trim().toLowerCase());
@@ -42,6 +43,7 @@ export function procesarMatrizComoLineaBase(rows, datosManuales, actualizarTabla
     const idxCarga = headers.findIndex(h => /carga/i.test(h));
     const idxPot = headers.findIndex(h => /potencia/i.test(h));
     const idxHoras = [];
+
     headers.forEach((h, i) => {
         if (/^\s*(\d|1\d|2[0-3])\s*$/.test(String(h))) idxHoras.push(i);
     });
@@ -61,21 +63,45 @@ export function procesarMatrizComoLineaBase(rows, datosManuales, actualizarTabla
         if (!nombre) continue;
         const potRaw = String(fila[idxPot] || '').replace(/\s/g, '').replace(',', '.');
         const potencia = Number(potRaw) || 0;
-        let horasEncendido = 0;
+        // Construir vector de 24 horas activas a partir de columnas 0..23
+        const hoursActive = Array(24).fill(0);
         idxHoras.forEach(ci => {
+            const label = headers[ci];
+            let h = parseInt(String(label), 10);
+            if (Number.isNaN(h)) return; // ignorar encabezados no numéricos
             const v = fila[ci];
-            if (v === 1 || v === '1' || String(v).trim().toLowerCase() === 'x' || String(v).trim().toLowerCase() === 'on') horasEncendido++;
+            const on = (v === 1 || v === '1' || String(v).trim().toLowerCase() === 'x' || String(v).trim().toLowerCase() === 'on');
+            if (on && h >= 0 && h <= 23) hoursActive[h] = 1;
         });
+        // Calcular rangos contiguos (incluye cruce de medianoche)
+        const rangos = [];
+        let inRun = false, start = 0;
+        for (let h = 0; h < 24; h++) {
+            if (hoursActive[h] && !inRun) { inRun = true; start = h; }
+            if (!hoursActive[h] && inRun) { inRun = false; rangos.push({ inicio: start, fin: h }); }
+        }
+        if (inRun) rangos.push({ inicio: start, fin: 24 });
+        // Unir primer y último rango si hay envoltura (ej. 22-24 y 0-2 => 22-2)
+        if (rangos.length >= 2) {
+            const first = rangos[0];
+            const last = rangos[rangos.length - 1];
+            if (first.inicio === 0 && last.fin === 24) {
+                // combinar
+                rangos.shift();
+                rangos[rangos.length - 1] = { inicio: last.inicio, fin: first.fin };
+            }
+        }
+        const horasEncendido = hoursActive.reduce((s, v) => s + (v ? 1 : 0), 0);
         const energia = (potencia / 1000) * horasEncendido;
         parsed.push({
             Carga: String(nombre),
             Potencia_W: potencia,
             HorasEncendido: horasEncendido,
             Energia_kWh: energia,
-            HoraInicio: 0,
-            HoraFin: 0
+            Rangos: rangos
         });
     }
+
     if (parsed.length === 0) {
         mostrarAlerta('No se encontraron filas válidas en el archivo.', 'error');
         return;

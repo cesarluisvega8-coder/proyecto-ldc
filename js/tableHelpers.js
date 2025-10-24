@@ -15,29 +15,38 @@ export function buildHourOptions(selected) {
 export function crearFilaTabla(itemIndex, obj, datosManuales, actualizarTablaManual, mostrarAlerta, onEditRanges) {
     const tr = document.createElement('tr');
     const potencia = Number(obj.Potencia_W || 0);
-        const hi = Number(obj.HoraInicio || 0);
-        const hf = Number(obj.HoraFin || 0);
-        const dur = Number(obj.HorasEncendido || 0);
+    const hi = (obj.HoraInicio !== undefined && obj.HoraInicio !== null) ? Number(obj.HoraInicio) : null;
+    const hf = (obj.HoraFin !== undefined && obj.HoraFin !== null) ? Number(obj.HoraFin) : null;
+    const dur = Number(obj.HorasEncendido || 0);
     const ener = Number(obj.Energia_kWh || 0);
-        // show Rangos if present, else fall back to HoraInicio/HoraFin selects
-        const horariosHtml = (Array.isArray(obj.Rangos) && obj.Rangos.length > 0)
-                ? `<div class="text-start small">${obj.Rangos.map(r=>String(r.inicio).padStart(2,'0')+':00-'+String(r.fin).padStart(2,'0')+':00').join(', ')}</div>`
-                : `<select class="form-select form-select-sm" data-field="HoraInicio">${buildHourOptions(hi)}</select>`;
+    // Mostrar Rangos como texto si existen.
+    // Si no hay Rangos: solo mostrar selects cuando existen HoraInicio/HoraFin; de lo contrario dejar en blanco.
+    let horariosHtml = '';
+    if (Array.isArray(obj.Rangos) && obj.Rangos.length > 0) {
+        horariosHtml = `<div class="text-start small">${obj.Rangos.map(r=>String(r.inicio).padStart(2,'0')+':00-'+String(r.fin).padStart(2,'0')+':00').join(', ')}</div>`;
+    } else if (hi !== null && hf !== null) {
+        horariosHtml = `<div class="d-flex align-items-center gap-1">`
+            + `<select class="form-select form-select-sm" data-field="HoraInicio">${buildHourOptions(hi)}</select>`
+            + `<select class="form-select form-select-sm" data-field="HoraFin">${buildHourOptions(hf)}</select>`
+            + `</div>`;
+    } else {
+        horariosHtml = `<div class="text-start small text-muted"></div>`; // vacío cuando no hay horario definido
+    }
 
-        tr.innerHTML = `
-            <td>${itemIndex + 1}</td>
-            <td style="min-width:160px"><input class="form-control form-control-sm" data-field="Carga" value="${escapeHtml(String(obj.Carga||''))}"></td>
-            <td><input class="form-control form-control-sm" type="number" step="any" data-field="Potencia_W" value="${potencia}"></td>
-            <td class="text-start">${horariosHtml}</td>
-            <td><input class="form-control form-control-sm text-center" data-field="HorasEncendido" value="${dur.toFixed(2)}" readonly></td>
-            <td><input class="form-control form-control-sm text-end" data-field="Energia_kWh" value="${ener.toFixed(3)}" readonly></td>
-            <td>
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-secondary btn-edit-ranges">✏️</button>
-                    <button class="btn btn-sm btn-danger btn-remove">🗑</button>
-                </div>
-            </td>
-        `;
+    tr.innerHTML = `
+        <td>${itemIndex + 1}</td>
+        <td style="min-width:160px"><input class="form-control form-control-sm" data-field="Carga" value="${escapeHtml(String(obj.Carga||''))}"></td>
+        <td><input class="form-control form-control-sm" type="number" step="any" data-field="Potencia_W" value="${potencia}"></td>
+        <td class="text-start">${horariosHtml}</td>
+        <td><input class="form-control form-control-sm text-center" data-field="HorasEncendido" value="${dur.toFixed(2)}" readonly></td>
+        <td><input class="form-control form-control-sm text-end" data-field="Energia_kWh" value="${ener.toFixed(3)}" readonly></td>
+        <td>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary btn-edit-ranges">✏️</button>
+                <button class="btn btn-sm btn-danger btn-remove">🗑</button>
+            </div>
+        </td>
+    `;
 
     // attach listeners for inputs & selects
     const inputs = tr.querySelectorAll('input[data-field], select[data-field]');
