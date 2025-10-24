@@ -31,7 +31,7 @@ Solanlyze te ayuda a construir tu Cuadro de Carga y analizar el consumo energét
 ## Ingreso de datos
 Puedes usar cualquiera de estos métodos, no son dependientes entre sí.
 - **Datos de ejemplo**: Presiona el botón "✨ Datos de ejemplo" para cargar datos rápidos y comrpobar el funcionamiento.
-- **Desde Excel**: la app detecta las horas marcadas y une rangos contiguos (incluye cruces de medianoche). Puedes usar la plantilla para cargar tus datos.
+- **Desde Excel**: Puedes usar la plantilla para cargar tus datos. Cambia las celdas de las columnas 0–23 con 1 (cuando esté encendido) y con 0 (cuando esté apagado) y luego sube el archivo. La app detecta las horas marcadas y une rangos contiguos (incluye cruces de medianoche).
 - **Ingreso manual**: Escribe nombre y potencia, pulsa “Agregar” y define horarios en el pop‑up.
 - **Electrodomésticos rápidos**: Elige de la galería, ajusta potencia/cantidad y define horarios.
 
@@ -40,7 +40,7 @@ Puedes usar cualquiera de estos métodos, no son dependientes entre sí.
 2. **Completa la plantilla** en Excel:
    - Carga (nombre del equipo).
    - Potencia (W).
-   - Horas encendidas marcando en columnas 0–23 con 1, x u on.
+   - Horas encendidas marcando en columnas 0–23 con 1, cuando esté apagado pones 0.
 3. **Carga tu archivo** y pulsa “Cargar archivo”.
 4. **Genera las gráficas** con “Generar métricas y gráficas”.
 
