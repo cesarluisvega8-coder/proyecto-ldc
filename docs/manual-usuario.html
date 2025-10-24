@@ -1,163 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Manual de uso - Solanlyze</title>
+  <title>Manual de Usuario — Solanlyze</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/metricStyles.css">
   <style>
-    body{ background:#fafafa; }
-    .container{ max-width:960px; }
-    h1,h2,h3{ color:#1e3a5f; }
-    .toc a{ text-decoration:none; }
-    @media print{
-      .no-print{ display:none !important; }
-      body{ background:#fff; }
-    }
-    code, kbd{ background:#f3f3f3; padding:.15rem .35rem; border-radius:.35rem; }
+    .manual h2, .manual h3 { scroll-margin-top: 90px; }
+    .manual .lead { font-size: 1.02rem; }
+    .manual .card { border-radius: 1rem; }
+    .manual .toc a { text-decoration: none; }
   </style>
 </head>
 <body>
-  <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h1 class="h3 mb-0">Manual de uso de la aplicación y Guía para Assistant (Chatbase)</h1>
-      <button class="btn btn-primary no-print" onclick="window.print()">Imprimir / Guardar como PDF</button>
+  <div class="container py-4 manual">
+    <div class="text-center mb-4">
+      <h1 class="mb-1">Manual de Usuario</h1>
+      <p class="lead text-muted mb-0">Guía rápida para usar Solanlyze</p>
     </div>
 
-    <p>Esta documentación sirve como:<br>
-    - Manual para usuarios finales.<br>
-    - Base de conocimiento para entrenar un asistente (Chatbase) que responda exclusivamente sobre la app.</p>
+    <div class="card p-3 mb-4">
+      <h5 class="mb-2">Contenido</h5>
+      <div class="toc small">
+        <a href="#requisitos">• Requisitos</a><br>
+        <a href="#flujo">• Flujo rápido</a><br>
+        <a href="#ingreso">• Ingreso de datos</a><br>
+        <a href="#tabla">• Tabla de datos</a><br>
+        <a href="#visualizaciones">• Visualizaciones</a><br>
+        <a href="#perfil">• Métricas por perfil horario</a><br>
+        <a href="#exportaciones">• Exportaciones</a><br>
+        <a href="#tema">• Tema claro/oscuro</a><br>
+        <a href="#consejos">• Consejos</a><br>
+        <a href="#soporte">• Solución de problemas</a>
+      </div>
+    </div>
 
-    <hr/>
+    <div id="requisitos" class="card p-3 mb-3">
+      <h2 class="h4">Requisitos</h2>
+      <ul class="mb-0">
+        <li><strong>Navegador:</strong> Chrome, Edge o Firefox actualizados.</li>
+        <li><strong>Acceso web:</strong> abre la app desde un sitio (ej. GitHub Pages). Evita abrir como archivo local.</li>
+      </ul>
+    </div>
 
-    <h2 id="proposito">1) Propósito y alcance</h2>
-    <ul>
-      <li><strong>Objetivo</strong>: Ingresar cargas, definir horarios de uso, calcular energía/potencia, visualizar curvas (LDC, temporal, heatmap) y exportar resultados.</li>
-      <li><strong>Audiencia</strong>: Usuarios que simulan consumos de una vivienda; no requiere conocimientos avanzados.</li>
-    </ul>
+    <div id="flujo" class="card p-3 mb-3">
+      <h2 class="h4">Flujo rápido</h2>
+      <ol class="mb-0">
+        <li><strong>Descarga la plantilla</strong> con “📄 Descargar plantilla”.</li>
+        <li><strong>Completa el Excel</strong> con nombre, potencia (W) y marca horas 0–23 con 1, x u on.</li>
+        <li><strong>Carga tu archivo</strong> y pulsa “Cargar archivo”.</li>
+        <li><strong>Genera gráficas</strong> con “Generar métricas y gráficas”.</li>
+      </ol>
+    </div>
 
-    <h2 id="estructura">2) Estructura general de la interfaz</h2>
-    <ul>
-      <li><strong>Carga de datos</strong>: Botones <code>Cargar archivo</code>, <code>Descargar plantilla</code>, <code>Datos de ejemplo</code>. Plantilla: hoja <code>LINEA BASE</code> con columnas <code>Item, Carga, Potencia (W), 0..23</code>.</li>
-      <li><strong>Ingreso manual</strong>: Campos <code>Nombre de la carga</code>, <code>Potencia (W)</code>. Botón <code>Agregar</code> abre el modal de franjas.</li>
-      <li><strong>Agregado rápido</strong>: Iconos de equipos y panel con <code>Nombre</code> (solo lectura), <code>Potencia</code>, <code>Cantidad</code> y botón <code>➕</code> que abre el modal de franjas.</li>
-      <li><strong>Tabla principal</strong>: Columnas <em>#, Carga, Potencia (W), Horarios, Horas encendido, Energía (kWh), Acción</em>. Acciones: <code>✏️</code> editar rangos, <code>🗑</code> eliminar.</li>
-      <li><strong>Métricas</strong>: Valores diarios/mensuales/anuales y selector de periodo.</li>
-      <li><strong>Visualizaciones</strong>: Tabs LDC, Mapa de calor y Consumo temporal; exportaciones disponibles.</li>
-    </ul>
+    <div id="ingreso" class="card p-3 mb-3">
+      <h2 class="h4">Ingreso de datos</h2>
+      <ul class="mb-0">
+        <li><strong>Desde Excel:</strong> detecta horas y une rangos contiguos, incluso si cruzan medianoche.</li>
+        <li><strong>Ingreso manual:</strong> escribe nombre y potencia, pulsa “Agregar” y define horarios en el pop‑up.</li>
+        <li><strong>Electrodomésticos rápidos:</strong> elige (galería), ajusta potencia/cantidad y define horarios.</li>
+      </ul>
+    </div>
 
-    <h2 id="flujos">3) Flujos principales</h2>
-    <h3>A) Agregar una carga por ingreso manual</h3>
-    <ol>
-      <li>Completa <code>Nombre de la carga</code> y <code>Potencia (W)</code> en “Ingreso manual”.</li>
-      <li>Pulsa <code>Agregar</code> y define franjas en el modal.</li>
-      <li>Guarda para ver la fila en la tabla con sus métricas.</li>
-    </ol>
-    <h3>B) Agregar un electrodoméstico rápidamente</h3>
-    <ol>
-      <li>Haz clic en un icono y ajusta <code>Potencia</code> y <code>Cantidad</code>.</li>
-      <li>Pulsa <code>➕</code>, define franjas y guarda.</li>
-    </ol>
-    <h3>C) Editar rangos en la tabla</h3>
-    <ol>
-      <li>Pulsa <code>✏️</code> en la fila deseada.</li>
-      <li>Edita las franjas en el modal y guarda.</li>
-    </ol>
-    <h3>D) Cargar datos desde archivo</h3>
-    <ol>
-      <li>Usa <code>Cargar archivo</code> con la plantilla <code>LINEA BASE</code>.</li>
-      <li>Edita rangos por fila con <code>✏️</code> si es necesario.</li>
-    </ol>
-    <h3>E) Generar métricas y visualizar</h3>
-    <ol>
-      <li>Pulsa <code>Generar métricas y gráficas</code>.</li>
-      <li>Elige periodo (día/mes) y, si quieres, un perfil horario.</li>
-    </ol>
-    <h3>F) Exportar informe PDF</h3>
-    <ol>
-      <li>Usa el botón de exportación del informe completo.</li>
-      <li>Las gráficas se renderizan y se capturan; hay fallback por si faltan.</li>
-    </ol>
+    <div id="tabla" class="card p-3 mb-3">
+      <h2 class="h4">Tabla de datos</h2>
+      <ul class="mb-0">
+        <li><strong>Edición:</strong> cambia “Carga” y “Potencia (W)” directamente.</li>
+        <li><strong>Horarios:</strong> texto de rangos si existen; listas desplegables si hay inicio/fin; en blanco si no hay horario.</li>
+        <li><strong>Acciones:</strong> ✏️ para editar rangos; 🗑 para eliminar.</li>
+      </ul>
+    </div>
 
-    <h2 id="componentes">4) Componentes y funcionalidades clave</h2>
-    <ul>
-      <li><strong>Modal de franjas</strong>: retorna <code>[{inicio, fin}]</code> en horas 0..24.</li>
-      <li><strong>Energía por rangos</strong>: <code>kWh = (W/1000) * horasTotales</code>.</li>
-      <li><strong>Tabla</strong>: muestra rangos como texto; <code>✏️</code> reabre el modal; <code>🗑</code> elimina.</li>
-      <li><strong>Gráficas</strong>: LDC, Heatmap y Temporal; “Perfil horario” para filtrar.</li>
-      <li><strong>PDF</strong>: fuerza render de gráficas y usa <em>fallback</em> cuando es necesario.</li>
-    </ul>
+    <div id="visualizaciones" class="card p-3 mb-3">
+      <h2 class="h4">Visualizaciones</h2>
+      <h3 class="h6 mt-2">Cuadro de carga (LDC)</h3>
+      <p class="mb-2">Día: curva con potencias ordenadas por duración. Mes: barras de energía estimada.</p>
+      <h3 class="h6">Mapa de calor</h3>
+      <p class="mb-2">Día: potencia por carga a lo largo de 24 horas. Mes: energía mensual estimada.</p>
+      <h3 class="h6">Consumo temporal</h3>
+      <ul>
+        <li><strong>Suma por hora:</strong> línea con consumo horario.</li>
+        <li><strong>Series por carga:</strong> una línea por carga (usa “Top N” para limitar cuántas se ven).</li>
+      </ul>
+      <p class="mb-0"><strong>Controles:</strong> “Por día”/“Por mes” y, en “Consumo temporal”, “Modo” y “Top N”.</p>
+    </div>
 
-    <h2 id="graficas">5) Explicación de gráficas</h2>
-    <ul>
-      <li><strong>LDC</strong>: potencia ordenada vs duración; identifica picos.</li>
-      <li><strong>Mapa de calor</strong>: potencia por hora y por carga.</li>
-      <li><strong>Consumo temporal</strong>: evolución agregada en el tiempo.</li>
-    </ul>
+    <div id="perfil" class="card p-3 mb-3">
+      <h2 class="h4">Métricas por perfil horario</h2>
+      <ul class="mb-0">
+        <li><strong>Perfiles:</strong> Día (06:00–17:59), Noche (18:00–05:59) o Personalizado.</li>
+        <li><strong>Generar:</strong> pulsa “Generar métricas por perfil”.</li>
+        <li><strong>Resultados:</strong> LDC, Consumo temporal y Mapa de calor filtrados; resumen con energía total, potencia media y pico.</li>
+      </ul>
+    </div>
 
-    <h2 id="mejores-practicas">6) Exportación y mejores prácticas</h2>
-    <ul>
-      <li>Agrega al menos una carga con rangos y pulsa “Generar métricas y gráficas”.</li>
-      <li>Si una gráfica no aparece, visita su tab y reintenta exportar.</li>
-    </ul>
+    <div id="exportaciones" class="card p-3 mb-3">
+      <h2 class="h4">Exportaciones</h2>
+      <ul class="mb-0">
+        <li><strong>PNG (gráfica visible):</strong> en “📈 Visualizaciones”, exporta la pestaña que estás viendo.</li>
+        <li><strong>Perfil horario:</strong> PNG combinado o PDF con las tres visualizaciones del perfil.</li>
+        <li><strong>Informe PDF completo:</strong> incluye portada, tabla de cargas y gráficas principales.</li>
+      </ul>
+      <p class="small text-muted mb-0">Las exportaciones usan fondo blanco para mayor contraste.</p>
+    </div>
 
-    <h2 id="errores">7) Mensajes de error comunes</h2>
-    <ul>
-      <li>“Completa nombre y potencia.” (manual).</li>
-      <li>“Selecciona un equipo y completa nombre, potencia y cantidad.” (rápido).</li>
-      <li>“No se definieron rangos.” (cerraste el modal sin franjas).</li>
-      <li>“No se pudo agregar el equipo. Revisa la consola.” (error no controlado).</li>
-    </ul>
+    <div id="tema" class="card p-3 mb-3">
+      <h2 class="h4">Tema claro/oscuro</h2>
+      <p class="mb-0">Cambia el tema con el botón del encabezado. Las gráficas se redibujan automáticamente para mantener buen contraste. Si no se actualizan al instante, vuelve a pulsar “Generar métricas y gráficas”.</p>
+    </div>
 
-    <h2 id="faq">8) Preguntas frecuentes</h2>
-    <ul>
-      <li>¿Cómo agrego varias franjas? → <code>Agregar</code> o <code>➕</code> y define en el modal.</li>
-      <li>¿Editar horarios? → Botón <code>✏️</code> en la tabla.</li>
-      <li>¿Qué es LDC? → Potencia vs duración, ayuda a ver picos.</li>
-      <li>¿Mapa vacío? → Genera métricas y revisa el tab.</li>
-      <li>¿Exportar informe? → Botón de exportación del PDF completo.</li>
-      <li>¿Cruce de medianoche? → Sí, ej. <code>22 → 02</code>.</li>
-    </ul>
+    <div id="consejos" class="card p-3 mb-3">
+      <h2 class="h4">Consejos</h2>
+      <ul class="mb-0">
+        <li><strong>Plantilla:</strong> marca horas con 1, x u on en columnas 0–23.</li>
+        <li><strong>Sin horarios:</strong> la celda queda en blanco; puedes definirlos luego con ✏️.</li>
+        <li><strong>Exportar:</strong> asegúrate de que la gráfica esté dibujada y la pestaña activa.</li>
+        <li><strong>Rendimiento:</strong> usa “Top N” en “Series por carga” si tienes muchas cargas.</li>
+      </ul>
+    </div>
 
-    <h2 id="assistant">9) Intenciones del asistente (Chatbase)</h2>
-    <ul>
-      <li>Agregar manual, agregado rápido, editar horarios, cargar archivo, explicar gráficas, exportar PDF.</li>
-      <li>Guardrails: solo temas de la app; no soporte externo; no inventar datos.</li>
-      <li>Estilo: breve, pasos numerados, nombres exactos de botones.</li>
-    </ul>
-
-    <h2 id="ui">10) Mapa de elementos UI</h2>
-    <ul>
-      <li><strong>Botones</strong>: Agregar, ➕, Cargar archivo, Descargar plantilla, Datos de ejemplo, Generar métricas y gráficas.</li>
-      <li><strong>Campos</strong>: Nombre de la carga, Potencia (W); y en rápido Nombre (solo lectura), Potencia, Cantidad.</li>
-      <li><strong>Tabla</strong>: ✏️ editar rangos, 🗑 eliminar.</li>
-      <li><strong>Gráficas</strong>: LDC, Mapa de calor, Consumo temporal.</li>
-    </ul>
-
-    <h2 id="datos">11) Estructura de datos clave</h2>
-    <p><code>{ Carga, Potencia_W, Rangos:[{inicio,fin}], HorasEncendido, Energia_kWh }</code></p>
-
-    <h2 id="troubleshooting">12) Troubleshooting</h2>
-    <ul>
-      <li><strong>➕ no abre modal</strong>: selecciona icono, completa Potencia y Cantidad. Ver consola.</li>
-      <li><strong>PDF sin gráficas</strong>: la app fuerza render y fallback; visita los tabs y reintenta.</li>
-    </ul>
-
-    <h2 id="branding">13) Exportación y branding (opcional)</h2>
-    <ul>
-      <li>Logo/colores en PDF: ajustar en <code>js/mainApp.js</code>.</li>
-      <li>Fuentes: se puede incrustar una fuente con jsPDF.</li>
-    </ul>
-
-    <h2 id="glosario">14) Glosario</h2>
-    <ul>
-      <li><strong>Rango horario</strong>: <code>inicio → fin</code> (0..24).</li>
-      <li><strong>LDC</strong>: curva de duración de carga.</li>
-      <li><strong>kWh</strong>: kilovatio-hora.</li>
-    </ul>
-
-    <hr/>
-    <div class="text-muted">Versión del manual: 1.0</div>
+    <div id="soporte" class="card p-3 mb-4">
+      <h2 class="h4">Solución de problemas</h2>
+      <ul class="mb-0">
+        <li><strong>No descarga la plantilla:</strong> abre la app desde una dirección web (no como archivo local).</li>
+        <li><strong>No carga el Excel:</strong> verifica encabezados y que estén las columnas de horas (0–23).</li>
+        <li><strong>No aparece la gráfica o bajo contraste:</strong> pulsa “Generar métricas y gráficas” o cambia de pestaña y vuelve.</li>
+      </ul>
+    </div>
   </div>
 </body>
 </html>
