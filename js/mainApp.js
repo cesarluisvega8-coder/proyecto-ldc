@@ -689,12 +689,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 const img1 = ldcCanvas ? ldcCanvas.toDataURL('image/png') : null;
                 const img2 = tempCanvas ? tempCanvas.toDataURL('image/png') : null;
                 const img3 = await Plotly.toImage(heatDiv, {format:'png', height:360, width: heatDiv.clientWidth});
-                // create combined canvas
+                // create combined canvas with white background for better contrast
                 const imgs = [img1,img2,img3].filter(Boolean);
                 const tempImages = await Promise.all(imgs.map(src=>new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src;})));
                 const width = Math.max(...tempImages.map(i=>i.width));
                 const height = tempImages.reduce((s,i)=>s+i.height,0);
                 const c = document.createElement('canvas'); c.width = width; c.height = height; const cx = c.getContext('2d');
+                // paint white background
+                cx.fillStyle = '#ffffff'; cx.fillRect(0,0,width,height);
                 let y = 0; tempImages.forEach(img=>{ cx.drawImage(img, 0, y, width, img.height); y+=img.height; });
                 const link = document.createElement('a'); link.download = `perfil_${Date.now()}.png`; link.href = c.toDataURL('image/png'); link.click();
             }catch(e){ console.error(e); mostrarAlerta('Error exportando imagen.','error'); }
@@ -706,13 +708,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if(exportPdfBtn){
         exportPdfBtn.addEventListener('click', async () => {
             try{
-                // ensure jsPDF is available (UMD exposes window.jspdf)
-                const jspdfLib = window.jspdf || window.jsPDF || (window.jspdf && window.jspdf.jsPDF) || null;
-                const jsPDFConstructor = jspdfLib && (jspdfLib.jsPDF || jspdfLib);
-                if(!jsPDFConstructor){
-                    mostrarAlerta('jsPDF no disponible en la página.', 'error');
-                    return;
-                }
                 const ldcCanvas = document.getElementById('ldcPerfilChart');
                 const tempCanvas = document.getElementById('temporalPerfilChart');
                 const heatDiv = document.getElementById('heatmapPerfilDiv');
@@ -751,19 +746,6 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Guardar preferencia de perfil
-    const savePrefBtn = document.getElementById('savePerfilPrefBtn');
-    if(savePrefBtn){
-        savePrefBtn.addEventListener('click', ()=>{
-            const perfil = (document.getElementById('perfilHorarioSelect')||{}).value || 'dia';
-            localStorage.setItem('perfilHorarioPref', perfil);
-            mostrarAlerta('Preferencia guardada.', 'success');
-        });
-        // aplicar si existe preferencia
-        const pref = localStorage.getItem('perfilHorarioPref');
-        if(pref){ document.getElementById('perfilHorarioSelect').value = pref; }
-    }
-
     // helper: populate hour selects for custom profile
     function populateCustomHourSelects(){
         const s = document.getElementById('customStartHour');
@@ -793,5 +775,47 @@ window.addEventListener('DOMContentLoaded', () => {
         const sp = document.getElementById('profileSpinner');
         if(!sp) return;
         if(show) sp.classList.add('show'); else sp.classList.remove('show');
+    }
+
+    // Exportar PNG de la gráfica visible (Visualizaciones)
+    const exportGeneralPngBtn = document.getElementById('exportGeneralPngBtn');
+    if (exportGeneralPngBtn) {
+        exportGeneralPngBtn.addEventListener('click', async () => {
+            try {
+                const activeBtn = document.querySelector('#chartTabs .nav-link.active');
+                const activeId = activeBtn ? activeBtn.id : null;
+                if (!activeId) { mostrarAlerta('No hay una pestaña activa.', 'error'); return; }
+                if (activeId === 'ldc-tab' || activeId === 'temporal-tab') {
+                    const canvas = (activeId === 'ldc-tab') ? document.getElementById('ldcChart') : document.getElementById('temporalChart');
+                    if (!canvas) { mostrarAlerta('Gráfica no disponible.', 'error'); return; }
+                    if (!canvas.width || !canvas.height) { canvas.getContext('2d'); }
+                    const w = canvas.width || canvas.clientWidth || 800;
+                    const h = canvas.height || canvas.clientHeight || 400;
+                    const out = document.createElement('canvas'); out.width = w; out.height = h; const ctx = out.getContext('2d');
+                    ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h);
+                    ctx.drawImage(canvas, 0, 0, w, h);
+                    const a = document.createElement('a'); a.download = `${activeId==='ldc-tab'?'ldc':'temporal'}_${Date.now()}.png`; a.href = out.toDataURL('image/png'); a.click();
+                    return;
+                }
+                if (activeId === 'heatmap-tab') {
+                    const heatDiv = document.getElementById('heatmapDiv');
+                    if (!heatDiv) { mostrarAlerta('Mapa de calor no disponible.', 'error'); return; }
+                    const dims = { w: Math.max(heatDiv.clientWidth||600,600), h: Math.max(heatDiv.clientHeight||360,360) };
+                    try {
+                        if (window.Plotly && typeof Plotly.toImage === 'function') {
+                            const dataUrl = await Plotly.toImage(heatDiv, { format: 'png', width: dims.w, height: dims.h });
+                            const a = document.createElement('a'); a.download = `heatmap_${Date.now()}.png`; a.href = dataUrl; a.click();
+                            return;
+                        }
+                    } catch(_) { /* fallback */ }
+                    if (window.html2canvas) {
+                        const cap = await html2canvas(heatDiv, { scale: 2, backgroundColor: '#FFFFFF' });
+                        const a = document.createElement('a'); a.download = `heatmap_${Date.now()}.png`; a.href = cap.toDataURL('image/png'); a.click();
+                        return;
+                    }
+                    mostrarAlerta('No se pudo capturar el mapa de calor.', 'error');
+                }
+            } catch (e) { console.error('Export PNG (visible) failed', e); mostrarAlerta('Error exportando PNG.', 'error'); }
+        });
     }
 });

@@ -1,0 +1,1 @@
+Si bien cuando estás previamente ya sea en modo claro u oscuro y generas gráficas estan se ven bien, por ejemplo el contraste entre el texto y el fondo es correcto, cuando generas graficas (ya estando en un modo) y haces el cambio a otro, el contraste se pierde.
