@@ -6,13 +6,14 @@ Solanlyze te ayuda a construir tu Cuadro de Carga y analizar el consumo energét
 
 ## Contenido
 - [Requisitos](#requisitos)
-- [Flujo rápido](#flujo-rápido)
+- [Tema claro/oscuro](#tema-clarooscuro)
+- [Chatbot](#chatbot)
 - [Ingreso de datos](#ingreso-de-datos)
+- [Flujo de ejemplo](#flujo-de-ejemplo)
 - [Tabla de datos](#tabla-de-datos)
 - [Visualizaciones](#visualizaciones)
 - [Métricas por perfil horario](#métricas-por-perfil-horario)
 - [Exportaciones](#exportaciones)
-- [Tema claro/oscuro](#tema-clarooscuro)
 - [Consejos](#consejos)
 - [Solución de problemas](#solución-de-problemas)
 
@@ -53,7 +54,7 @@ Puedes usar cualquiera de estos métodos, no son dependientes entre sí.
 - **Acciones**: ✏️ para editar rangos; 🗑 para eliminar.
 
 ## Visualizaciones
-# Una vez tengas tus datos cargados presiona "Generar métricas y gráficas".
+Una vez tengas tus datos cargados presiona "Generar métricas y gráficas".
 - **Cuadro de carga (LDC)**:
   - Día: curva con potencias ordenadas por duración.
   - Mes: barras de energía estimada.
