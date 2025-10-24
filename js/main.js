@@ -728,8 +728,8 @@ document.getElementById("addManualBtn")?.addEventListener("click", () => {
     });
   });
 
-  // Agregar a tabla
-  document.getElementById("agregarElectroBtn").addEventListener("click",()=>{
+  // Agregar a tabla (legacy) — desactivar si mainApp gestiona el quick-add
+  if (!(window.USE_MAINAPP_QUICKADD === true)) document.getElementById("agregarElectroBtn").addEventListener("click",()=>{
     if(!seleccionado){mostrarAlerta("Selecciona un electrodoméstico.","error");return;}
     const nombre=document.getElementById("nombreElectro").value.trim();
     const potencia=parseFloat(document.getElementById("potenciaElectro").value);

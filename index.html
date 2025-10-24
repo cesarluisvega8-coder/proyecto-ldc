@@ -89,7 +89,7 @@
         <div class="card shadow-sm p-4 mb-4">
             <h5>⚡ Agregar electrodomésticos rápidamente</h5>
             <p class="small text-muted">
-                Selecciona un electrodoméstico, ajusta su potencia, cantidad y horario de uso. Al presionar ➕ se agregan directamente a la tabla de datos.
+                Selecciona un electrodoméstico y ajusta su potencia y cantidad. Define los horarios al presionar ➕ en el pop‑up de franjas.
             </p>
 
             <div class="row g-3 mt-3">
@@ -152,25 +152,17 @@
             <div id="detalleElectrodomestico" class="mt-4 p-3 border rounded bg-light d-none">
                 <h6 class="fw-bold mb-3">⚙️ Configuración del equipo seleccionado</h6>
                 <div class="row g-2 align-items-end">
-                    <div class="col-md-3">
+                    <div class="col-md-5">
                         <label class="form-label">Nombre</label>
                         <input type="text" id="nombreElectro" class="form-control" readonly>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <label class="form-label">Potencia (W)</label>
                         <input type="number" id="potenciaElectro" class="form-control">
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <label class="form-label">Cantidad</label>
                         <input type="number" id="cantidadElectro" class="form-control" min="1" value="1">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Hora inicio</label>
-                        <select id="inicioElectro" class="form-select"></select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Hora fin</label>
-                        <select id="finElectro" class="form-select"></select>
                     </div>
                     <div class="col-md-1 d-grid">
                         <button class="btn btn-success" id="agregarElectroBtn">➕</button>
@@ -305,26 +297,24 @@
                     </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
-                  <select id="periodSelect" class="form-select" style="max-width:140px;">
+                  <select id="periodSelect" class="form-select" style="min-width:180px;">
                       <option value="dia">Por día</option>
                       <option value="mes">Por mes</option>
+                  </select>
+                  <select id="temporalModeSelect" class="form-select form-select-sm" style="max-width:220px;">
+                      <option value="suma">Suma por hora (actual)</option>
+                      <option value="por-carga">Series por carga</option>
+                  </select>
+                  <select id="temporalTopNSelect" class="form-select form-select-sm" style="max-width:120px;">
+                      <option value="0">All</option>
+                      <option value="5">Top 5</option>
+                      <option value="10">Top 10</option>
+                      <option value="20">Top 20</option>
                   </select>
                 </div>
             </div>
             <div class="tab-content" id="chartTabsContent">
                 <div class="tab-pane fade" id="temporalPanel" role="tabpanel" aria-labelledby="temporal-tab">
-                    <div class="d-flex justify-content-end align-items-center gap-2 mb-2">
-                      <select id="temporalModeSelect" class="form-select form-select-sm" style="max-width:220px;">
-                          <option value="suma">Suma por hora (actual)</option>
-                          <option value="por-carga">Series por carga</option>
-                      </select>
-                      <select id="temporalTopNSelect" class="form-select form-select-sm" style="max-width:120px;">
-                          <option value="0">General</option>
-                          <option value="5">Top 5</option>
-                          <option value="10">Top 10</option>
-                          <option value="20">Top 20</option>
-                      </select>
-                    </div>
                     <div id="temporalNote" class="alert alert-warning py-2 px-3 mb-2 d-none" style="font-size:0.98em;"></div>
                     <canvas id="temporalChart" style="max-height:320px;width:100%;background:transparent;border-radius:1.2rem;"></canvas>
                 </div>
