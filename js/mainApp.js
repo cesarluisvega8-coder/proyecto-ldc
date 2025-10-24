@@ -20,6 +20,18 @@ window.addEventListener('DOMContentLoaded', () => {
         temporalTab.addEventListener('shown.bs.tab', () => applyPeriod());
         temporalTab.addEventListener('click', () => { setTimeout(() => applyPeriod(), 60); });
     }
+    // También actualizar estado al cambiar a LDC o Heatmap
+    const ldcTab = document.getElementById('ldc-tab');
+    if (ldcTab) {
+        ldcTab.addEventListener('shown.bs.tab', () => applyPeriod());
+        ldcTab.addEventListener('click', () => { setTimeout(() => applyPeriod(), 60); });
+    }
+    const heatmapTab = document.getElementById('heatmap-tab');
+    if (heatmapTab) {
+        heatmapTab.addEventListener('shown.bs.tab', () => applyPeriod());
+        heatmapTab.addEventListener('click', () => { setTimeout(() => applyPeriod(), 60); });
+    }
+
     // Re-dibujar al cambiar tema, solo si hay datos cargados
     document.body.addEventListener('classChange', () => {
         if ((window.datosManuales||[]).length > 0) { applyPeriod(); }
@@ -425,14 +437,21 @@ window.addEventListener('DOMContentLoaded', () => {
     const periodSelect = document.getElementById('periodSelect');
     function applyPeriod() {
         const periodo = periodSelect ? periodSelect.value : 'dia';
-        // Ocultar/mostrar TopN según modo temporal
+        // Habilitar selects solo en la pestaña de Consumo temporal
         const temporalModeSelect = document.getElementById('temporalModeSelect');
         const temporalTopNSelect = document.getElementById('temporalTopNSelect');
-        if (temporalModeSelect && temporalTopNSelect) {
-            const showTopN = temporalModeSelect.value === 'por-carga';
+        const activeTab = document.querySelector('#chartTabs .nav-link.active');
+        const isTemporalActive = !!(activeTab && activeTab.id === 'temporal-tab');
+        if (temporalModeSelect) {
+            temporalModeSelect.disabled = !isTemporalActive;
+            temporalModeSelect.style.opacity = isTemporalActive ? '1' : '0.55';
+            temporalModeSelect.title = isTemporalActive ? '' : 'Disponible solo en "Consumo temporal"';
+        }
+        if (temporalTopNSelect) {
+            const showTopN = isTemporalActive && temporalModeSelect && temporalModeSelect.value === 'por-carga';
             temporalTopNSelect.disabled = !showTopN;
             temporalTopNSelect.style.opacity = showTopN ? '1' : '0.55';
-            temporalTopNSelect.title = showTopN ? '' : 'Disponible solo en "Series por carga"';
+            temporalTopNSelect.title = showTopN ? '' : 'Disponible solo en "Series por carga" del gráfico temporal';
         }
         // Evitar alertas si no hay datos
         if (!window.datosManuales || window.datosManuales.length === 0) {
