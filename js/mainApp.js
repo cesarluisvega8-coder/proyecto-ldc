@@ -34,7 +34,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Re-dibujar al cambiar tema, solo si hay datos cargados
     document.body.addEventListener('classChange', () => {
-        if ((window.datosManuales||[]).length > 0) { applyPeriod(); }
+        if ((window.datosManuales||[]).length > 0) {
+            // Redibujar visualizaciones generales (LDC, Temporal, Heatmap)
+            applyPeriod();
+            // Redibujar métricas por perfil horario si el módulo está visible/configurado
+            try { if (typeof generatePerfilFromUI === 'function') generatePerfilFromUI(false); } catch(_) {}
+        }
     });
     // ...existing code...
     // NUEVO: Estructura de datos para múltiples rangos por carga
