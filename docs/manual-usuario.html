@@ -25,13 +25,14 @@
       <h5 class="mb-2">Contenido</h5>
       <div class="toc small">
         <a href="#requisitos">• Requisitos</a><br>
-        <a href="#flujo">• Flujo rápido</a><br>
+        <a href="#tema">• Tema claro/oscuro</a><br>
+        <a href="#chatbot">• Chatbot</a><br>
         <a href="#ingreso">• Ingreso de datos</a><br>
+        <a href="#flujo">• Flujo de ejemplo</a><br>
         <a href="#tabla">• Tabla de datos</a><br>
         <a href="#visualizaciones">• Visualizaciones</a><br>
         <a href="#perfil">• Métricas por perfil horario</a><br>
         <a href="#exportaciones">• Exportaciones</a><br>
-        <a href="#tema">• Tema claro/oscuro</a><br>
         <a href="#consejos">• Consejos</a><br>
         <a href="#soporte">• Solución de problemas</a>
       </div>
@@ -45,23 +46,38 @@
       </ul>
     </div>
 
-    <div id="flujo" class="card p-3 mb-3">
-      <h2 class="h4">Flujo rápido</h2>
-      <ol class="mb-0">
-        <li><strong>Descarga la plantilla</strong> con “📄 Descargar plantilla”.</li>
-        <li><strong>Completa el Excel</strong> con nombre, potencia (W) y marca horas 0–23 con 1, x u on.</li>
-        <li><strong>Carga tu archivo</strong> y pulsa “Cargar archivo”.</li>
-        <li><strong>Genera gráficas</strong> con “Generar métricas y gráficas”.</li>
-      </ol>
+    <div id="tema" class="card p-3 mb-3">
+      <h2 class="h4">Tema claro/oscuro</h2>
+      <ul class="mb-0">
+        <li><strong>Cambia de tema</strong> con el botón del encabezado (sol/luna).</li>
+        <li>Las gráficas se redibujan automáticamente para mantener el <strong>contraste</strong>.</li>
+      </ul>
+    </div>
+
+    <div id="chatbot" class="card p-3 mb-3">
+      <h2 class="h4">Chatbot</h2>
+      <p class="mb-0">Puedes usar el chatbot con IA (abajo a la derecha) para obtener ayuda con el funcionamiento de la app.</p>
     </div>
 
     <div id="ingreso" class="card p-3 mb-3">
       <h2 class="h4">Ingreso de datos</h2>
+      <p class="mb-2">Puedes usar cualquiera de estos métodos, no son dependientes entre sí.</p>
       <ul class="mb-0">
-        <li><strong>Desde Excel:</strong> detecta horas y une rangos contiguos, incluso si cruzan medianoche.</li>
+        <li><strong>Datos de ejemplo:</strong> presiona “✨ Datos de ejemplo” para cargar datos rápidos y comprobar el funcionamiento.</li>
+        <li><strong>Desde Excel:</strong> detecta horas y une rangos contiguos (incluye cruces de medianoche). Puedes usar la plantilla para cargar tus datos.</li>
         <li><strong>Ingreso manual:</strong> escribe nombre y potencia, pulsa “Agregar” y define horarios en el pop‑up.</li>
-        <li><strong>Electrodomésticos rápidos:</strong> elige (galería), ajusta potencia/cantidad y define horarios.</li>
+        <li><strong>Electrodomésticos rápidos:</strong> elige de la galería, ajusta potencia/cantidad y define horarios.</li>
       </ul>
+    </div>
+
+    <div id="flujo" class="card p-3 mb-3">
+      <h2 class="h4">Flujo de ejemplo</h2>
+      <ol class="mb-0">
+        <li><strong>Descarga la plantilla</strong> con “📄 Descargar plantilla”.</li>
+        <li><strong>Completa el Excel</strong> con nombre, potencia (W) y marca horas 0–23 con 1, x u on.</li>
+        <li><strong>Carga tu archivo</strong> y pulsa “Cargar archivo”.</li>
+        <li><strong>Genera las gráficas</strong> con “Generar métricas y gráficas”.</li>
+      </ol>
     </div>
 
     <div id="tabla" class="card p-3 mb-3">
@@ -75,6 +91,7 @@
 
     <div id="visualizaciones" class="card p-3 mb-3">
       <h2 class="h4">Visualizaciones</h2>
+      <p class="mb-2"><strong>Una vez tengas tus datos cargados</strong> presiona “Generar métricas y gráficas”.</p>
       <h3 class="h6 mt-2">Cuadro de carga (LDC)</h3>
       <p class="mb-2">Día: curva con potencias ordenadas por duración. Mes: barras de energía estimada.</p>
       <h3 class="h6">Mapa de calor</h3>

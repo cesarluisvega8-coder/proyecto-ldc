@@ -2,6 +2,8 @@
 
 Solanlyze te ayuda a construir tu Cuadro de Carga y analizar el consumo energético con gráficas claras y exportables. No necesitas instalar nada: abre la página, carga tus datos y explora.
 
+# Enlance de acceso: https://cesarluisvega8-coder.github.io/proyecto-ldc/
+
 ## Contenido
 - [Requisitos](#requisitos)
 - [Flujo rápido](#flujo-rápido)
@@ -16,9 +18,23 @@ Solanlyze te ayuda a construir tu Cuadro de Carga y analizar el consumo energét
 
 ## Requisitos
 - **[Navegador]** Chrome, Edge o Firefox actualizados.
-- **[Conexión]** Preferible acceder desde una dirección web (ej. GitHub Pages). Evita abrir como `file://`.
+- **[Conexión]** Preferible acceder desde una dirección web. Evita abrirlo en local si no se descargan todas las dependencias.
 
-## Flujo rápido
+## Tema claro/oscuro
+- Cambia de tema con el botón del encabezado (sol/luna).
+- Las gráficas se redibujan automáticamente para mantener el **contraste**.
+
+## Chatbot
+- Puedes usar el chatbot desarrollado con IA en la esquina inferior derecha para obtener ayuda con el funcionamiento de la app.
+
+## Ingreso de datos
+Puedes usar cualquiera de estos métodos, no son dependientes entre sí.
+- **Datos de ejemplo**: Presiona el botón "✨ Datos de ejemplo" para cargar datos rápidos y comrpobar el funcionamiento.
+- **Desde Excel**: la app detecta las horas marcadas y une rangos contiguos (incluye cruces de medianoche). Puedes usar la plantilla para cargar tus datos.
+- **Ingreso manual**: Escribe nombre y potencia, pulsa “Agregar” y define horarios en el pop‑up.
+- **Electrodomésticos rápidos**: Elige de la galería, ajusta potencia/cantidad y define horarios.
+
+## Flujo de ejemplo
 1. **Descarga la plantilla** con “📄 Descargar plantilla”.
 2. **Completa la plantilla** en Excel:
    - Carga (nombre del equipo).
@@ -27,12 +43,6 @@ Solanlyze te ayuda a construir tu Cuadro de Carga y analizar el consumo energét
 3. **Carga tu archivo** y pulsa “Cargar archivo”.
 4. **Genera las gráficas** con “Generar métricas y gráficas”.
 
-Tip: Usa “✨ Datos de ejemplo” para explorar rápidamente.
-
-## Ingreso de datos
-- **Desde Excel**: la app detecta las horas marcadas y une rangos contiguos (incluye cruces de medianoche).
-- **Ingreso manual**: escribe nombre y potencia, pulsa “Agregar” y define horarios en el pop‑up.
-- **Electrodomésticos rápidos**: elige de la galería, ajusta potencia/cantidad y define horarios.
 
 ## Tabla de datos
 - **Edición**: modifica “Carga” y “Potencia (W)” directamente.
@@ -43,6 +53,7 @@ Tip: Usa “✨ Datos de ejemplo” para explorar rápidamente.
 - **Acciones**: ✏️ para editar rangos; 🗑 para eliminar.
 
 ## Visualizaciones
+# Una vez tengas tus datos cargados presiona "Generar métricas y gráficas".
 - **Cuadro de carga (LDC)**:
   - Día: curva con potencias ordenadas por duración.
   - Mes: barras de energía estimada.
@@ -72,9 +83,6 @@ Controles:
   - Genera un reporte con portada, tabla de cargas y las principales gráficas.
 - Todas las exportaciones usan **fondo blanco** para mejor contraste.
 
-## Tema claro/oscuro
-- Cambia de tema con el botón del encabezado (sol/luna).
-- Las gráficas se redibujan automáticamente para mantener el **contraste**.
 
 ## Consejos
 - **Plantilla**: marca horas con 1, x u on; respeta las columnas 0–23.
