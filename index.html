@@ -510,6 +510,42 @@
 })();
 </script>
 
+<!-- Highlight para Chatbase (no modifica el widget) -->
+<div id="chatbaseSpotlight" class="chatbase-spotlight" aria-hidden="true"></div>
+<div id="chatbasePointer" class="chatbase-pointer" aria-hidden="true">¿Necesitas ayuda?</div>
+
+<script>
+// Mostrar halo y pointer solo la primera visita y ocultar en interacción
+(function(){
+  const KEY = 'chatbase_highlight_seen';
+  const seen = localStorage.getItem(KEY) === '1';
+  const halo = document.getElementById('chatbaseSpotlight');
+  const pointer = document.getElementById('chatbasePointer');
+  if (!halo || !pointer) return;
+  function hideAll(){
+    halo.style.display = 'none';
+    pointer.classList.remove('show');
+    pointer.setAttribute('aria-hidden','true');
+    localStorage.setItem(KEY,'1');
+    document.removeEventListener('click', onDocClick, true);
+  }
+  function onDocClick(){ hideAll(); }
+  if (!seen) {
+    // esperar a que Chatbase inserte su burbuja
+    setTimeout(() => {
+      halo.style.display = 'block';
+      pointer.classList.add('show');
+      pointer.setAttribute('aria-hidden','false');
+      // Ocultar al primer click en cualquier parte o tras 9s
+      setTimeout(hideAll, 9000);
+      setTimeout(() => document.addEventListener('click', onDocClick, true), 0);
+    }, 1800);
+  } else {
+    halo.style.display = 'none';
+  }
+})();
+</script>
+
 
 </body>
 
