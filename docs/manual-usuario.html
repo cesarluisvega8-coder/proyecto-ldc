@@ -42,7 +42,7 @@
       <h2 class="h4">Requisitos</h2>
       <ul class="mb-0">
         <li><strong>Navegador:</strong> Chrome, Edge o Firefox actualizados.</li>
-        <li><strong>Acceso web:</strong> abre la app desde un sitio (ej. GitHub Pages). Evita abrir como archivo local.</li>
+        <li><strong>Acceso web:</strong> Preferible acceder desde una dirección web. Evita abrirlo en local si no se descargan todas las dependencias.</li>
       </ul>
     </div>
 
@@ -56,7 +56,7 @@
 
     <div id="chatbot" class="card p-3 mb-3">
       <h2 class="h4">Chatbot</h2>
-      <p class="mb-0">Puedes usar el chatbot con IA (abajo a la derecha) para obtener ayuda con el funcionamiento de la app.</p>
+      <p class="mb-0">Puedes usar el chatbot desarrollado con IA (abajo a la derecha) para obtener ayuda con el funcionamiento de la app.</p>
     </div>
 
     <div id="ingreso" class="card p-3 mb-3">
@@ -64,7 +64,7 @@
       <p class="mb-2">Puedes usar cualquiera de estos métodos, no son dependientes entre sí.</p>
       <ul class="mb-0">
         <li><strong>Datos de ejemplo:</strong> presiona “✨ Datos de ejemplo” para cargar datos rápidos y comprobar el funcionamiento.</li>
-        <li><strong>Desde Excel:</strong> detecta horas y une rangos contiguos (incluye cruces de medianoche). Puedes usar la plantilla para cargar tus datos.</li>
+        <li><strong>Desde Excel:</strong> Puedes usar la plantilla para cargar tus datos. Cambia las celdas de las columnas 0–23 con 1 (cuando esté encendido) y con 0 (cuando esté apagado) y luego sube el archivo. La app detecta las horas marcadas y une rangos contiguos (incluye cruces de medianoche).</li>
         <li><strong>Ingreso manual:</strong> escribe nombre y potencia, pulsa “Agregar” y define horarios en el pop‑up.</li>
         <li><strong>Electrodomésticos rápidos:</strong> elige de la galería, ajusta potencia/cantidad y define horarios.</li>
       </ul>
@@ -74,7 +74,7 @@
       <h2 class="h4">Flujo de ejemplo</h2>
       <ol class="mb-0">
         <li><strong>Descarga la plantilla</strong> con “📄 Descargar plantilla”.</li>
-        <li><strong>Completa el Excel</strong> con nombre, potencia (W) y marca horas 0–23 con 1, x u on.</li>
+        <li><strong>Completa el Excel</strong> con nombre, potencia (W) y Horas encendidas marcando en columnas 0–23 con 1, cuando esté apagado pones 0.</li>
         <li><strong>Carga tu archivo</strong> y pulsa “Cargar archivo”.</li>
         <li><strong>Genera las gráficas</strong> con “Generar métricas y gráficas”.</li>
       </ol>
@@ -84,7 +84,7 @@
       <h2 class="h4">Tabla de datos</h2>
       <ul class="mb-0">
         <li><strong>Edición:</strong> cambia “Carga” y “Potencia (W)” directamente.</li>
-        <li><strong>Horarios:</strong> texto de rangos si existen; listas desplegables si hay inicio/fin; en blanco si no hay horario.</li>
+        <li><strong>Horarios:</strong> texto de rangos si existen tipo “08:00–12:00, 18:00–21:00”; listas desplegables si hay inicio/fin; en blanco si no hay horario.</li>
         <li><strong>Acciones:</strong> ✏️ para editar rangos; 🗑 para eliminar.</li>
       </ul>
     </div>
@@ -121,11 +121,6 @@
         <li><strong>Informe PDF completo:</strong> incluye portada, tabla de cargas y gráficas principales.</li>
       </ul>
       <p class="small text-muted mb-0">Las exportaciones usan fondo blanco para mayor contraste.</p>
-    </div>
-
-    <div id="tema" class="card p-3 mb-3">
-      <h2 class="h4">Tema claro/oscuro</h2>
-      <p class="mb-0">Cambia el tema con el botón del encabezado. Las gráficas se redibujan automáticamente para mantener buen contraste. Si no se actualizan al instante, vuelve a pulsar “Generar métricas y gráficas”.</p>
     </div>
 
     <div id="consejos" class="card p-3 mb-3">
