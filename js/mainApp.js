@@ -115,11 +115,35 @@ window.addEventListener('DOMContentLoaded', () => {
     // Tabla
     const tbody = document.querySelector('#tablaManual tbody');
 
+    const tablaTipoFilter = document.getElementById('tablaTipoFilter');
+    const tipoCargaSelect = document.getElementById('tipoCargaSelect');
+
+    function updateTiposUI(){
+        try{
+            const tipos = Array.from(new Set((window.datosManuales||[]).map(d=>String(d.Tipo_carga||'').trim()).filter(v=>v)));            
+            // tabla filter
+            if(tablaTipoFilter){
+                const prev = tablaTipoFilter.value;
+                tablaTipoFilter.innerHTML = '<option value="">Todos</option>' + tipos.map(t=>`<option value="${t}">${t}</option>`).join('');
+                if (prev && (prev==='' || tipos.includes(prev))) tablaTipoFilter.value = prev; else tablaTipoFilter.value = '';
+            }
+            // charts selector
+            if(tipoCargaSelect){
+                const prev2 = tipoCargaSelect.value;
+                tipoCargaSelect.innerHTML = '<option value="">Todos los tipos</option>' + tipos.map(t=>`<option value="${t}">${t}</option>`).join('');
+                if (prev2 && (prev2==='' || tipos.includes(prev2))) tipoCargaSelect.value = prev2; else tipoCargaSelect.value = '';
+            }
+        }catch(_){ /* noop */ }
+    }
+
     function renderTabla() {
+        updateTiposUI();
+        const filtro = (tablaTipoFilter && tablaTipoFilter.value) ? String(tablaTipoFilter.value) : '';
+        const filterFn = filtro ? (d => String(d.Tipo_carga||'').trim() === filtro) : undefined;
         // pass an onEditRanges callback so rows can open the ranges modal
         actualizarTablaManual(tbody, window.datosManuales, crearFilaTabla, mostrarAlerta, async (idx) => {
             await editRangesForRow(idx);
-        });
+        }, filterFn);
     }
 
     // Exportar informe PDF completo
@@ -452,6 +476,12 @@ window.addEventListener('DOMContentLoaded', () => {
             temporalModeSelect.style.opacity = isTemporalActive ? '1' : '0.55';
             temporalModeSelect.title = isTemporalActive ? '' : 'Disponible solo en "Consumo temporal"';
         }
+        // Mostrar selector de tipo solo en temporal
+        if (tipoCargaSelect) {
+            tipoCargaSelect.disabled = !isTemporalActive;
+            tipoCargaSelect.style.opacity = isTemporalActive ? '1' : '0.55';
+            tipoCargaSelect.title = isTemporalActive ? '' : 'Disponible solo en "Consumo temporal"';
+        }
         if (temporalTopNSelect) {
             const showTopN = isTemporalActive && temporalModeSelect && temporalModeSelect.value === 'por-carga';
             temporalTopNSelect.disabled = !showTopN;
@@ -473,6 +503,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (temporalModeSelect) temporalModeSelect.addEventListener('change', applyPeriod);
     const temporalTopNSelect = document.getElementById('temporalTopNSelect');
     if (temporalTopNSelect) temporalTopNSelect.addEventListener('change', applyPeriod);
+    if (tipoCargaSelect) tipoCargaSelect.addEventListener('change', applyPeriod);
+    if (tablaTipoFilter) tablaTipoFilter.addEventListener('change', renderTabla);
     // Inicial: set visibility state for TopN
     applyPeriod();
 

@@ -181,6 +181,19 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
     // check temporal mode selector (if present)
     const temporalModeEl = document.getElementById('temporalModeSelect');
     const temporalMode = temporalModeEl ? temporalModeEl.value : 'suma';
+    // tipo selector
+    const tipoSelEl = document.getElementById('tipoCargaSelect');
+    const tipoFilter = tipoSelEl ? String(tipoSelEl.value || '') : '';
+    const shareEl = document.getElementById('tipoShareText');
+    if (shareEl) shareEl.textContent = '';
+    // helper: indices by tipo (normalize empty)
+    const tipoKey = (t)=>{ const s=String(t||'').trim(); return s || 'Sin tipo'; };
+    const tiposMap = new Map();
+    datosManuales.forEach((d,i)=>{
+        const k = tipoKey(d.Tipo_carga);
+        if(!tiposMap.has(k)) tiposMap.set(k, []);
+        tiposMap.get(k).push(i);
+    });
     if (periodo === 'dia') {
         const labels = Array.from({length:24},(_,i)=>i + ':00');
         if (temporalMode === 'por-carga') {
@@ -189,7 +202,8 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
             const topN = topNEl ? Number(topNEl.value) : 0;
             // compute metric to sort loads (use Energia_kWh or peak contribution)
             const scoreArr = datosManuales.map((d,i)=>({i, score: safeNumber(d.Energia_kWh) || Math.max(...hourlyMatrix[i])}));
-            const sortedByScore = scoreArr.slice().sort((a,b)=>b.score - a.score);
+            const filteredScore = tipoFilter ? scoreArr.filter(x=> tipoKey(datosManuales[x.i].Tipo_carga) === tipoKey(tipoFilter)) : scoreArr;
+            const sortedByScore = filteredScore.slice().sort((a,b)=>b.score - a.score);
             const chosenIndexes = (topN>0) ? sortedByScore.slice(0, topN).map(x=>x.i) : sortedByScore.map(x=>x.i);
             const datasets = chosenIndexes.map((idx, outIdx) => ({
                 label: cargas[idx] || `C${idx+1}`,
@@ -216,9 +230,66 @@ export function procesarYGraficar(datosManuales, ldcChartRef, periodo = 'dia') {
                 },
                 plugins: [legendHighlightPlugin]
             });
+            // share text for filtered tipo (optional)
+            if (shareEl && tipoFilter) {
+                const idxs = tiposMap.get(tipoKey(tipoFilter)) || [];
+                let sum = 0; idxs.forEach(i=>{ sum += hourlyMatrix[i].reduce((a,b)=>a+b,0); });
+                const pct = (energiaDiariaTotal>0)? (sum/energiaDiariaTotal*100):0;
+                shareEl.textContent = `Participación de "${tipoFilter}": ${pct.toFixed(1)}% del consumo diario`;
+            }
+        } else if (temporalMode === 'por-tipo') {
+            const datasets = [];
+            let idxColor = 0;
+            const orderTipos = Array.from(tiposMap.keys());
+            orderTipos.forEach((k) => {
+                if (tipoFilter && tipoKey(tipoFilter) !== k) return;
+                const idxs = tiposMap.get(k) || [];
+                const series = new Array(24).fill(0);
+                idxs.forEach(i=>{ for(let h=0;h<24;h++){ series[h] += hourlyMatrix[i][h]||0; } });
+                datasets.push({ label: k, data: series, borderColor: generateColor(idxColor), backgroundColor: generateColor(idxColor), fill: false, tension: 0.2, pointRadius: 2 });
+                idxColor++;
+            });
+            if (window.temporalChartRef) window.temporalChartRef.destroy();
+            const theme = chartTheme();
+            window.temporalChartRef = new Chart(temporalCtx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth:10, color: theme.legend } }, tooltip: { mode: 'nearest' } },
+                    interaction: { mode: 'nearest', intersect: false },
+                    scales: {
+                        x: { title: { display: true, text: 'Hora', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } },
+                        y: { title: { display: true, text: 'Potencia (kW)', color: theme.title }, ticks:{ color: theme.ticks }, grid:{ color: theme.grid } }
+                    }
+                },
+                plugins: [legendHighlightPlugin]
+            });
+            // share text for all tipos
+            if (shareEl) {
+                const parts = [];
+                orderTipos.forEach(k=>{
+                    if (tipoFilter && tipoKey(tipoFilter) !== k) return;
+                    const idxs = tiposMap.get(k) || [];
+                    let sum = 0; idxs.forEach(i=>{ sum += hourlyMatrix[i].reduce((a,b)=>a+b,0); });
+                    const pct = (energiaDiariaTotal>0)? (sum/energiaDiariaTotal*100):0;
+                    parts.push(`${k}: ${pct.toFixed(1)}%`);
+                });
+                shareEl.textContent = parts.length? ('Participación por tipo — ' + parts.join(' · ')) : '';
+            }
         } else {
             // Suma por hora (actual)
-            const data = hourlyTotals.slice();
+            let data = hourlyTotals.slice();
+            if (tipoFilter) {
+                const selectedIdxs = tiposMap.get(tipoKey(tipoFilter)) || [];
+                data = new Array(24).fill(0);
+                selectedIdxs.forEach(i=>{ for(let h=0;h<24;h++){ data[h] += hourlyMatrix[i][h]||0; } });
+                if (shareEl) {
+                    let sum = 0; selectedIdxs.forEach(i=>{ sum += hourlyMatrix[i].reduce((a,b)=>a+b,0); });
+                    const pct = (energiaDiariaTotal>0)? (sum/energiaDiariaTotal*100):0;
+                    shareEl.textContent = `Participación de "${tipoFilter}": ${pct.toFixed(1)}% del consumo diario`;
+                }
+            }
             if (window.temporalChartRef) window.temporalChartRef.destroy();
             const theme = chartTheme();
             window.temporalChartRef = new Chart(temporalCtx, {

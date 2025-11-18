@@ -19,6 +19,7 @@ export function crearFilaTabla(itemIndex, obj, datosManuales, actualizarTablaMan
     const hf = (obj.HoraFin !== undefined && obj.HoraFin !== null) ? Number(obj.HoraFin) : null;
     const dur = Number(obj.HorasEncendido || 0);
     const ener = Number(obj.Energia_kWh || 0);
+    const tipo = String(obj.Tipo_carga || '').trim();
     // Mostrar Rangos como texto si existen.
     // Si no hay Rangos: solo mostrar selects cuando existen HoraInicio/HoraFin; de lo contrario dejar en blanco.
     let horariosHtml = '';
@@ -36,6 +37,7 @@ export function crearFilaTabla(itemIndex, obj, datosManuales, actualizarTablaMan
     tr.innerHTML = `
         <td>${itemIndex + 1}</td>
         <td style="min-width:160px"><input class="form-control form-control-sm" data-field="Carga" value="${escapeHtml(String(obj.Carga||''))}"></td>
+        <td style="min-width:150px"><input class="form-control form-control-sm" data-field="Tipo_carga" placeholder="Tipo (opcional)" value="${escapeHtml(tipo)}"></td>
         <td><input class="form-control form-control-sm" type="number" step="any" data-field="Potencia_W" value="${potencia}"></td>
         <td class="text-start">${horariosHtml}</td>
         <td><input class="form-control form-control-sm text-center" data-field="HorasEncendido" value="${dur.toFixed(2)}" readonly></td>
@@ -53,6 +55,7 @@ export function crearFilaTabla(itemIndex, obj, datosManuales, actualizarTablaMan
     inputs.forEach(inp => {
         inp.addEventListener('change', () => {
             const cargaVal = tr.querySelector('input[data-field="Carga"]').value.trim() || 'Sin nombre';
+            const tipoVal = tr.querySelector('input[data-field="Tipo_carga"]').value.trim();
             const potVal = parseFloat(tr.querySelector('input[data-field="Potencia_W"]').value) || 0;
             // if there's a select HoraInicio in row
             const hiSelect = tr.querySelector('select[data-field="HoraInicio"]');
@@ -67,6 +70,7 @@ export function crearFilaTabla(itemIndex, obj, datosManuales, actualizarTablaMan
             }
             const enVal = (potVal / 1000) * durVal;
             datosManuales[itemIndex].Carga = cargaVal;
+            datosManuales[itemIndex].Tipo_carga = tipoVal;
             datosManuales[itemIndex].Potencia_W = potVal;
             if (hiSelect && hfSelect) {
                 datosManuales[itemIndex].HoraInicio = hiVal;
@@ -102,20 +106,23 @@ export function crearFilaTabla(itemIndex, obj, datosManuales, actualizarTablaMan
     return tr;
 }
 
-export function actualizarTablaManual(tbody, datosManuales, crearFilaTabla, mostrarAlerta, onEditRanges) {
+export function actualizarTablaManual(tbody, datosManuales, crearFilaTabla, mostrarAlerta, onEditRanges, filterFn) {
     tbody.innerHTML = '';
-    if (datosManuales.length === 0) {
+    const predicate = typeof filterFn === 'function' ? filterFn : () => true;
+    const anyVisible = datosManuales.some(d => predicate(d));
+    if (datosManuales.length === 0 || !anyVisible) {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td colspan="7" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>`;
+        tr.innerHTML = `<td colspan="8" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>`;
         tbody.appendChild(tr);
         return;
     }
     datosManuales.forEach((d, i) => {
+        if (!predicate(d)) return;
         const fila = crearFilaTabla(
             i,
             d,
             datosManuales,
-            () => actualizarTablaManual(tbody, datosManuales, crearFilaTabla, mostrarAlerta, onEditRanges),
+            () => actualizarTablaManual(tbody, datosManuales, crearFilaTabla, mostrarAlerta, onEditRanges, filterFn),
             mostrarAlerta,
             onEditRanges
         );

@@ -186,7 +186,11 @@
         <div class="card shadow-sm p-4 mb-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5>📋 Tabla de datos</h5>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 align-items-center">
+                    <label class="small mb-0">Tipo:</label>
+                    <select id="tablaTipoFilter" class="form-select form-select-sm" style="max-width:200px;">
+                        <option value="">Todos</option>
+                    </select>
                     <button id="processBtn" class="btn btn-outline-primary btn-sm">Generar métricas y gráficas</button>
                     <button id="clearTableBtn" class="btn btn-outline-danger btn-sm">🧹 Limpiar tabla</button>
                 </div>
@@ -198,6 +202,7 @@
                         <tr>
                             <th style="width:40px">#</th>
                             <th>Carga</th>
+                            <th style="width:150px">Tipo de carga</th>
                             <th style="width:120px">Potencia (W)</th>
                             <th style="width:180px">Horarios</th>
                             <th style="width:120px">Horas encendido</th>
@@ -207,7 +212,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="7" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>
+                            <td colspan="8" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>
                         </tr>
                     </tbody>
                 </table>
@@ -312,9 +317,13 @@
                       <option value="dia">Por día</option>
                       <option value="mes">Por mes</option>
                   </select>
-                  <select id="temporalModeSelect" class="form-select form-select-sm" style="max-width:220px;">
+                  <select id="temporalModeSelect" class="form-select form-select-sm" style="max-width:240px;">
                       <option value="suma">Suma por hora (actual)</option>
                       <option value="por-carga">Series por carga</option>
+                      <option value="por-tipo">Series por tipo de carga</option>
+                  </select>
+                  <select id="tipoCargaSelect" class="form-select form-select-sm" style="max-width:200px;">
+                      <option value="">Todos los tipos</option>
                   </select>
                   <select id="temporalTopNSelect" class="form-select form-select-sm" style="max-width:120px;">
                       <option value="0">All</option>
@@ -329,6 +338,7 @@
                 <div class="tab-pane fade" id="temporalPanel" role="tabpanel" aria-labelledby="temporal-tab">
                     <div id="temporalNote" class="alert alert-warning py-2 px-3 mb-2 d-none" style="font-size:0.98em;"></div>
                     <canvas id="temporalChart" style="max-height:320px;width:100%;background:transparent;border-radius:1.2rem;"></canvas>
+                    <div id="tipoShareText" class="small text-muted mt-2"></div>
                 </div>
                 <div class="tab-pane fade show active" id="ldcPanel" role="tabpanel" aria-labelledby="ldc-tab">
                     <div id="ldcNote" class="alert alert-warning py-2 px-3 mb-2 d-none" style="font-size:0.98em;"></div>
