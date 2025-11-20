@@ -316,7 +316,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         { titulo:'Potencia Pico', valor:`${potenciaPico} kW`, icono:'🔝' },
                         { titulo:'Número de Cargas', valor:String(numCargas), icono:'🔌' }
                     ];
-                    const cardWidth=(contentWidth-10)/2, cardHeight=25; let xPos=margin, cardY=yPos;
+                    const cardWidth=(contentWidth-10)/2, cardHeight=22; let xPos=margin, cardY=yPos; // Reducir altura de tarjetas
                     metricas.forEach((m,idx)=>{
                         if(idx===2){ xPos=margin; cardY+=cardHeight+5; }
                         pdf.setFillColor(...colors.lightGray); pdf.roundedRect(xPos, cardY, cardWidth, cardHeight, 2, 2, 'F');
@@ -333,7 +333,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     pdf.setFontSize(9);
                     const colWidths=[12,55,28,22,28,35];
                     const headers=['#','Carga','Potencia (W)','Horas','Energía (kWh)','Horarios'];
-                    const rowHeight=7;
+                    const rowHeight=6.5; // Reducir altura de filas para caber más datos
                     function dibujarEncabezadoTabla(y){
                         // Mejor legibilidad: encabezado claro con texto negro
                         pdf.setFillColor(...colors.lightGray); pdf.rect(margin, y, contentWidth, rowHeight, 'F');
@@ -342,15 +342,16 @@ window.addEventListener('DOMContentLoaded', () => {
                         return y+rowHeight;
                     }
 
-                    // Render filas (limitado a 50 registros para PDF)
+                    // Render filas (mostrar hasta 30 registros en el PDF)
                     yPos = dibujarEncabezadoTabla(yPos);
                     const allRows = (window.datosManuales||[]);
                     const totalRows = allRows.length;
-                    const rows = allRows.slice(0, 50);
-                    if(totalRows > 50){
+                    const maxRows = 30; // Mostrar hasta 30 registros
+                    const rows = allRows.slice(0, maxRows);
+                    if(totalRows > maxRows){
                         pdf.setFontSize(8); pdf.setFont(undefined,'normal'); pdf.setTextColor(120,120,120);
-                        pdf.text(`Mostrando 50 de ${totalRows} registros.`, margin, yPos + 5);
-                        yPos += 10; // dar espacio a la nota
+                        pdf.text(`Mostrando ${maxRows} de ${totalRows} registros.`, margin, yPos + 5);
+                        yPos += 8; // Reducir el espacio de la nota
                         pdf.setFontSize(9); pdf.setTextColor(...colors.text); pdf.setFont(undefined,'normal');
                     }
                     rows.forEach((d,i)=>{
@@ -372,7 +373,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         const ldcCanvas = document.getElementById('ldcChart');
                         if (ldcCanvas && ldcCanvas.width && ldcCanvas.height){
                             const img = ldcCanvas.toDataURL('image/png',1.0);
-                            const imgH = Math.min((contentWidth * ldcCanvas.height)/Math.max(ldcCanvas.width,1), 120);
+                            const imgH = Math.min((contentWidth * ldcCanvas.height)/Math.max(ldcCanvas.width,1), 100); // Reducir altura de gráficos
                             safeAddImage(img, margin, yPos, contentWidth, imgH) && (yPos+=imgH+10);
                         } else {
                             pdf.text('(LDC no disponible para exportación)', margin, yPos); yPos+=10;
