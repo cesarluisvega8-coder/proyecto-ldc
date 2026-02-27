@@ -3,29 +3,32 @@
    ========================================================================== */
 
 :root {
-    /* Color Palette - Premium Solar Tech */
-    --primary-bg: #f8fafc;
-    --card-bg: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
+    /* Color Palette - Neon Solar Tech */
+    --primary-bg: #020617;
+    /* Very dark navy */
+    --card-bg: rgba(30, 41, 59, 0.7);
+    /* Glassmorphism base */
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
 
-    --accent-solar: #3b82f6;
-    /* Blue for tech/solar vibe */
+    --accent-neon: #00f2ff;
+    /* Neon Cyan */
+    --accent-blue: #3b82f6;
+    /* Tech Blue */
     --accent-energy: #10b981;
     /* Green for efficiency */
     --accent-warning: #f59e0b;
     /* Orange for alerts */
-    --accent-sun: #facc15;
-    /* Yellow for highlights */
 
-    --header-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    --button-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    --header-gradient: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+    --button-primary: linear-gradient(135deg, #00f2ff 0%, #3b82f6 100%);
     --button-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
 
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --welcome-bg: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    --welcome-text: #1e40af;
+
+    --shadow-neon: 0 0 20px rgba(0, 242, 255, 0.2);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
 
     --radius-sm: 0.5rem;
     --radius-md: 0.75rem;
@@ -35,10 +38,11 @@
 
 /* === BASE STYLES === */
 body {
-    background-color: var(--primary-bg);
-    background-image:
-        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+    background: linear-gradient(180deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%);
+    /* High contrast electronic blue */
+    background: linear-gradient(180deg, #00f2ff 0%, #001f3f 60%, #020617 100%);
+    /* Specific Neon to Deep Navy */
+    background-attachment: fixed;
     min-height: 100vh;
     font-family: 'Inter', sans-serif;
     color: var(--text-main);
@@ -123,17 +127,19 @@ h6,
 /* === CARDS & CONTAINERS === */
 .card {
     background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-radius: var(--radius-lg) !important;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-xl);
     padding: 1.5rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card:hover {
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-neon);
     transform: translateY(-4px);
-    border-color: rgba(59, 130, 246, 0.2);
+    border-color: rgba(0, 242, 255, 0.3);
 }
 
 .card h5 {
@@ -143,6 +149,22 @@ h6,
     display: flex;
     align-items: center;
     gap: 0.75rem;
+}
+
+/* Welcome Banner */
+.welcome-banner {
+    background: var(--welcome-bg);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    color: var(--welcome-text);
+}
+
+.welcome-banner h4 {
+    color: var(--welcome-text);
+}
+
+.welcome-banner .text-secondary {
+    color: var(--welcome-text) !important;
+    opacity: 0.8;
 }
 
 /* === BUTTONS === */
@@ -156,7 +178,9 @@ h6,
 .btn-primary {
     background: var(--button-primary) !important;
     border: none !important;
-    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+    color: #020617 !important;
+    /* Better contrast on neon */
+    box-shadow: 0 4px 14px 0 rgba(0, 242, 255, 0.3);
 }
 
 .btn-success {
@@ -171,8 +195,8 @@ h6,
 }
 
 .btn-outline-primary {
-    border: 2px solid var(--accent-solar);
-    color: var(--accent-solar);
+    border: 2px solid var(--accent-blue);
+    color: var(--accent-blue);
 }
 
 .btn-outline-success {
@@ -204,8 +228,8 @@ h6,
 }
 
 .appliance-card.selected {
-    background: #eff6ff;
-    border-color: var(--accent-solar);
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--accent-blue);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
@@ -264,18 +288,74 @@ h6,
 
 .form-control:focus,
 .form-select:focus {
-    border-color: var(--accent-solar);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--accent-neon);
+    box-shadow: 0 0 0 3px rgba(0, 242, 255, 0.2);
     outline: none;
+}
+
+/* Specific button overrides for dark mode */
+.dark-mode .btn-outline-success {
+    color: var(--accent-energy) !important;
+    border-color: var(--accent-energy) !important;
+}
+
+.dark-mode .btn-outline-secondary {
+    color: #94a3b8 !important;
+    border-color: #334155 !important;
 }
 
 /* === DARK MODE === */
 .dark-mode {
-    --primary-bg: #0f172a;
-    --card-bg: #1e293b;
+    --primary-bg: #020617;
+    --card-bg: rgba(15, 23, 42, 0.85);
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    --header-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    --welcome-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    --welcome-text: #60a5fa;
+}
+
+/* Ensure text readability for Bootstrap classes in dark mode */
+.dark-mode .text-secondary,
+.dark-mode .text-muted,
+.dark-mode .small-muted,
+.dark-mode p.small,
+.dark-mode .small {
+    color: #94a3b8 !important;
+    opacity: 1 !important;
+}
+
+.dark-mode .appliance-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+}
+
+/* Force appliance icons to be white in dark mode */
+.dark-mode .appliance-icon {
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+}
+
+.dark-mode .appliance-label {
+    color: #f8fafc !important;
+}
+
+/* Fix headers inside sections */
+.dark-mode .card-header.bg-light {
+    background: rgba(30, 41, 59, 0.9) !important;
+    color: var(--accent-neon) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+.dark-mode .form-control::placeholder {
+    color: #475569 !important;
 }
 
 .dark-mode .card {
