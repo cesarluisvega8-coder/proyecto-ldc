@@ -6,9 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Solanlyze - Cuadro de Carga y Análisis</title>
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/metricStyles.css">
@@ -26,38 +33,50 @@
 <body>
     <!-- perfil horario movido al final del documento -->
     <div class="container pt-1 pb-3">
-                <div class="solar-header text-center mb-4 position-relative">
-                        <div style="position:absolute;left:24px;top:6px;z-index:1;display:flex;align-items:center;gap:8px;">
-                                <img src="assets/icons/sunalyze_logo.png" alt="Solanlyze" style="height:48px;width:auto;border-radius:10px;" />
-                        </div>
-                        <div class="solar-header-title">
-                            <span class="solar-icon">🔆</span>
-                            <span class="solar-title">Solanlyze</span>
-                        </div>
-                        <div class="solar-subtitle">Cuadro de Carga y Análisis Energético</div>
-                        <button id="themeToggle" class="btn btn-outline-dark btn-sm theme-toggle" title="Cambiar modo claro/oscuro">
-                            <span id="themeIcon">🌙</span>
-                        </button>
-                </div>
+        <div class="solar-header text-center mb-4 position-relative">
+            <div style="position:absolute;left:24px;top:6px;z-index:1;display:flex;align-items:center;gap:8px;">
+                <img src="assets/icons/sunalyze_logo.png" alt="Solanlyze"
+                    style="height:48px;width:auto;border-radius:10px;" />
+            </div>
+            <div class="solar-header-title">
+                <span class="solar-icon">🔆</span>
+                <span class="solar-title">Solanlyze</span>
+            </div>
+            <div class="solar-subtitle">Cuadro de Carga y Análisis Energético</div>
+            <button id="themeToggle" class="btn btn-outline-dark btn-sm theme-toggle" title="Cambiar modo claro/oscuro">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </div>
 
-                <div class="alert alert-info shadow-sm mb-4" role="status" style="border-radius:0.75rem;">
-                    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
-                        <div>
-                            Solanlyze te ayuda a construir tu Cuadro de Carga y analizar el consumo energético con gráficas claras y exportables. No necesitas instalar nada: abre la página, carga tus datos o añadelos manualmente y explora.
-                        </div>
-                        <div class="w-100"></div>
-                        <div class="d-flex align-items-center gap-2">
-                            <span>En el siguiente botón de ayuda encontrarás la guía completa, o mejor aún, el chatbot desarrollado con IA (ubicado abajo a la derecha) que te ayudará a resolver tus dudas.</span>
-                            <a href="docs/manual-usuario.html" target="_blank" class="btn btn-sm btn-outline-primary">Ayuda</a>
-                        </div>
+        <!-- Welcome Section -->
+        <div class="card border-0 mb-4 bg-transparent overflow-hidden">
+            <div class="d-flex flex-column flex-md-row align-items-center gap-4 p-4 rounded-4"
+                style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid rgba(59, 130, 246, 0.1);">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-2">Bienvenido a Solanlyze 🔆</h4>
+                    <p class="mb-3 text-secondary">
+                        Tu plataforma inteligente para la gestión de cuadros de carga y eficiencia energética.
+                        Analiza consumos, identifica picos y exporta informes técnicos de nivel profesional en segundos.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="docs/manual-usuario.html" target="_blank"
+                            class="btn btn-sm btn-white bg-white shadow-sm border-0">📖 Ver manual</a>
+                        <button class="btn btn-sm btn-link text-decoration-none text-primary fw-bold"
+                            onclick="document.getElementById('generateSampleBtn').click()">✨ Cargar ejemplos</button>
                     </div>
                 </div>
+                <div class="d-none d-md-block">
+                    <img src="assets/icons/fan.png" alt="Energy"
+                        style="width: 80px; opacity: 0.8; filter: drop-shadow(0 10px 15px rgba(59, 130, 246, 0.2));">
+                </div>
+            </div>
+        </div>
 
         <!-- Carga de datos -->
         <div class="card shadow-sm p-4 mb-4">
             <h5>📂 Carga de datos</h5>
             <p class="small-muted mb-2">
-             • Puedes descargar la plantilla, cargar un .xlsx del mismo formato o usar datos de ejemplo.
+                • Puedes descargar la plantilla, cargar un .xlsx del mismo formato o usar datos de ejemplo.
             </p>
 
             <div class="row g-2">
@@ -79,7 +98,8 @@
         <!-- Ingreso manual -->
         <div class="card shadow-sm p-4 mb-4">
             <h5>✍️ Ingreso manual</h5>
-            <p class="small-muted mb-2">Ingresa el nombre y la potencia. El horario se definirá en el pop-up al presionar Agregar.</p>
+            <p class="small-muted mb-2">Ingresa el nombre y la potencia. El horario se definirá en el pop-up al
+                presionar Agregar.</p>
 
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
@@ -100,7 +120,8 @@
         <div class="card shadow-sm p-4 mb-4">
             <h5>⚡ Agregar electrodomésticos rápidamente</h5>
             <p class="small text-muted">
-                Selecciona un electrodoméstico y ajusta su potencia y cantidad. Define los horarios al presionar ➕ en el pop‑up de franjas.
+                Selecciona un electrodoméstico y ajusta su potencia y cantidad. Define los horarios al presionar ➕ en el
+                pop‑up de franjas.
             </p>
 
             <div class="row g-3 mt-3">
@@ -212,7 +233,8 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="8" class="text-muted">Sin registros — agrega datos manualmente o carga un archivo</td>
+                            <td colspan="8" class="text-muted">Sin registros — agrega datos manualmente o carga un
+                                archivo</td>
                         </tr>
                     </tbody>
                 </table>
@@ -223,121 +245,143 @@
         <!-- Reemplazado por componente de métricas (diario/mensual/anual) -->
         <!-- Begin metricsPanel -->
         <div class="card shadow-sm p-3 mb-4 metrics-card">
-    <div class="solar-divider"></div>
-    <h5 class="text-center mb-2">📊 Métricas energéticas</h5>
-    <p class="small text-muted text-center mb-3">Estas métricas describen el consumo estimado de energía y potencia de la vivienda con base en los equipos ingresados.</p>
-    
-    <!-- Tabs para periodos -->
-    <ul class="nav nav-tabs solar-tabs mb-3 justify-content-center" id="metricsTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="daily-tab" data-bs-toggle="tab" data-bs-target="#dailyMetrics" type="button" role="tab">
-                 Diario
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthlyMetrics" type="button" role="tab">
-                📅 Mensual
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="yearly-tab" data-bs-toggle="tab" data-bs-target="#yearlyMetrics" type="button" role="tab">
-                📆 Anual
-            </button>
-        </li>
-    </ul>
+            <div class="solar-divider"></div>
+            <h5 class="text-center mb-2">📊 Métricas energéticas</h5>
+            <p class="small text-muted text-center mb-3">Estas métricas describen el consumo estimado de energía y
+                potencia de la vivienda con base en los equipos ingresados.</p>
 
-    <!-- Contenido de las pestañas -->
-    <div class="tab-content" id="metricsTabsContent">
-        <!-- Métricas Diarias -->
-        <div class="tab-pane fade show active" id="dailyMetrics" role="tabpanel">
-            <div class="d-flex flex-wrap justify-content-center gap-4">
-                <div class="solar-metric">
-                    <span class="solar-icon">🔋</span> Energía diaria: <strong id="energiaTotal_dia">-</strong> kWh/día
+            <!-- Tabs para periodos -->
+            <ul class="nav nav-tabs solar-tabs mb-3 justify-content-center" id="metricsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="daily-tab" data-bs-toggle="tab" data-bs-target="#dailyMetrics"
+                        type="button" role="tab">
+                        Diario
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthlyMetrics"
+                        type="button" role="tab">
+                        📅 Mensual
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="yearly-tab" data-bs-toggle="tab" data-bs-target="#yearlyMetrics"
+                        type="button" role="tab">
+                        📆 Anual
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Contenido de las pestañas -->
+            <div class="tab-content" id="metricsTabsContent">
+                <!-- Métricas Diarias -->
+                <div class="tab-pane fade show active" id="dailyMetrics" role="tabpanel">
+                    <div class="d-flex flex-wrap justify-content-center gap-4">
+                        <div class="solar-metric">
+                            <span class="solar-icon">🔋</span> Energía diaria: <strong id="energiaTotal_dia">-</strong>
+                            kWh/día
+                        </div>
+                        <div class="solar-metric">
+                            <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_dia">-</strong>
+                            kW
+                        </div>
+                        <div class="solar-metric">
+                            <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_dia">-</strong>
+                            kW
+                        </div>
+                    </div>
                 </div>
-                <div class="solar-metric">
-                    <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_dia">-</strong> kW
+
+                <!-- Métricas Mensuales -->
+                <div class="tab-pane fade" id="monthlyMetrics" role="tabpanel">
+                    <div class="d-flex flex-wrap justify-content-center gap-4">
+                        <div class="solar-metric">
+                            <span class="solar-icon">🔋</span> Energía mensual: <strong id="energiaTotal_mes">-</strong>
+                            kWh/mes
+                        </div>
+                        <div class="solar-metric">
+                            <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_mes">-</strong>
+                            kW
+                        </div>
+                        <div class="solar-metric">
+                            <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_mes">-</strong>
+                            kW
+                        </div>
+                    </div>
                 </div>
-                <div class="solar-metric">
-                    <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_dia">-</strong> kW
+
+                <!-- Métricas Anuales -->
+                <div class="tab-pane fade" id="yearlyMetrics" role="tabpanel">
+                    <div class="d-flex flex-wrap justify-content-center gap-4">
+                        <div class="solar-metric">
+                            <span class="solar-icon">🔋</span> Energía anual: <strong id="energiaTotal_anio">-</strong>
+                            kWh/año
+                        </div>
+                        <div class="solar-metric">
+                            <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_anio">-</strong>
+                            kW
+                        </div>
+                        <div class="solar-metric">
+                            <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_anio">-</strong>
+                            kW
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Métricas Mensuales -->
-        <div class="tab-pane fade" id="monthlyMetrics" role="tabpanel">
-            <div class="d-flex flex-wrap justify-content-center gap-4">
-                <div class="solar-metric">
-                    <span class="solar-icon">🔋</span> Energía mensual: <strong id="energiaTotal_mes">-</strong> kWh/mes
-                </div>
-                <div class="solar-metric">
-                    <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_mes">-</strong> kW
-                </div>
-                <div class="solar-metric">
-                    <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_mes">-</strong> kW
-                </div>
-            </div>
-        </div>
-
-        <!-- Métricas Anuales -->
-        <div class="tab-pane fade" id="yearlyMetrics" role="tabpanel">
-            <div class="d-flex flex-wrap justify-content-center gap-4">
-                <div class="solar-metric">
-                    <span class="solar-icon">🔋</span> Energía anual: <strong id="energiaTotal_anio">-</strong> kWh/año
-                </div>
-                <div class="solar-metric">
-                    <span class="solar-icon">⚡</span> Potencia media: <strong id="potenciaMedia_anio">-</strong> kW
-                </div>
-                <div class="solar-metric">
-                    <span class="solar-icon">🌞</span> Potencia pico: <strong id="potenciaPico_anio">-</strong> kW
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
         <!-- End metricsPanel -->
 
         <!-- Visualizaciones -->
         <div class="card shadow-sm p-3 mb-3">
-    <div class="solar-divider"></div>
+            <div class="solar-divider"></div>
             <h5 class="text-center mb-3">📈 Visualizaciones</h5>
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <ul class="nav nav-tabs solar-tabs" id="chartTabs" role="tablist" style="border-radius:1rem;overflow:hidden;">
+                <ul class="nav nav-tabs solar-tabs" id="chartTabs" role="tablist"
+                    style="border-radius:1rem;overflow:hidden;">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="ldc-tab" data-bs-toggle="tab" data-bs-target="#ldcPanel" type="button" role="tab" aria-controls="ldcPanel" aria-selected="true">Cuadro de carga LDC</button>
+                        <button class="nav-link active" id="ldc-tab" data-bs-toggle="tab" data-bs-target="#ldcPanel"
+                            type="button" role="tab" aria-controls="ldcPanel" aria-selected="true">Cuadro de carga
+                            LDC</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="heatmap-tab" data-bs-toggle="tab" data-bs-target="#heatmapPanel" type="button" role="tab" aria-controls="heatmapPanel" aria-selected="false">Mapa de calor</button>
+                        <button class="nav-link" id="heatmap-tab" data-bs-toggle="tab" data-bs-target="#heatmapPanel"
+                            type="button" role="tab" aria-controls="heatmapPanel" aria-selected="false">Mapa de
+                            calor</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="temporal-tab" data-bs-toggle="tab" data-bs-target="#temporalPanel" type="button" role="tab" aria-controls="temporalPanel" aria-selected="false">Consumo temporal</button>
+                        <button class="nav-link" id="temporal-tab" data-bs-toggle="tab" data-bs-target="#temporalPanel"
+                            type="button" role="tab" aria-controls="temporalPanel" aria-selected="false">Consumo
+                            temporal</button>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
-                  <select id="periodSelect" class="form-select" style="min-width:180px;">
-                      <option value="dia">Por día</option>
-                      <option value="mes">Por mes</option>
-                  </select>
-                  <select id="temporalModeSelect" class="form-select form-select-sm" style="max-width:240px;">
-                      <option value="suma">Suma por hora (actual)</option>
-                      <option value="por-carga">Series por carga</option>
-                      <option value="por-tipo">Series por tipo de carga</option>
-                  </select>
-                  <select id="tipoCargaSelect" class="form-select form-select-sm" style="max-width:200px;">
-                      <option value="">Todos los tipos</option>
-                  </select>
-                  <select id="temporalTopNSelect" class="form-select form-select-sm" style="max-width:120px;">
-                      <option value="0">All</option>
-                      <option value="5">Top 5</option>
-                      <option value="10">Top 10</option>
-                      <option value="20">Top 20</option>
-                  </select>
-                  <button id="exportGeneralPngBtn" class="btn btn-outline-primary btn-sm">Exportar PNG</button>
+                    <select id="periodSelect" class="form-select" style="min-width:180px;">
+                        <option value="dia">Por día</option>
+                        <option value="mes">Por mes</option>
+                    </select>
+                    <select id="temporalModeSelect" class="form-select form-select-sm" style="max-width:240px;">
+                        <option value="suma">Suma por hora (actual)</option>
+                        <option value="por-carga">Series por carga</option>
+                        <option value="por-tipo">Series por tipo de carga</option>
+                    </select>
+                    <select id="tipoCargaSelect" class="form-select form-select-sm" style="max-width:200px;">
+                        <option value="">Todos los tipos</option>
+                    </select>
+                    <select id="temporalTopNSelect" class="form-select form-select-sm" style="max-width:120px;">
+                        <option value="0">All</option>
+                        <option value="5">Top 5</option>
+                        <option value="10">Top 10</option>
+                        <option value="20">Top 20</option>
+                    </select>
+                    <button id="exportGeneralPngBtn" class="btn btn-outline-primary btn-sm">Exportar PNG</button>
                 </div>
             </div>
             <div class="tab-content" id="chartTabsContent">
                 <div class="tab-pane fade" id="temporalPanel" role="tabpanel" aria-labelledby="temporal-tab">
-                    <div id="temporalNote" class="alert alert-warning py-2 px-3 mb-2 d-none" style="font-size:0.98em;"></div>
-                    <canvas id="temporalChart" style="max-height:320px;width:100%;background:transparent;border-radius:1.2rem;"></canvas>
+                    <div id="temporalNote" class="alert alert-warning py-2 px-3 mb-2 d-none" style="font-size:0.98em;">
+                    </div>
+                    <canvas id="temporalChart"
+                        style="max-height:320px;width:100%;background:transparent;border-radius:1.2rem;"></canvas>
                     <div id="tipoShareText" class="small text-muted mt-2"></div>
                 </div>
                 <div class="tab-pane fade show active" id="ldcPanel" role="tabpanel" aria-labelledby="ldc-tab">
@@ -347,20 +391,27 @@
                 <div class="tab-pane fade" id="heatmapPanel" role="tabpanel" aria-labelledby="heatmap-tab">
                     <div class="row g-3 align-items-start">
                         <div class="col-lg-9 col-md-8 col-12">
-                            <div id="heatmapNote" class="alert alert-warning py-2 px-3 mb-2 d-none" style="font-size:0.98em;"></div>
+                            <div id="heatmapNote" class="alert alert-warning py-2 px-3 mb-2 d-none"
+                                style="font-size:0.98em;"></div>
                             <div id="heatmapDiv" style="height:380px;"></div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-12">
                             <div class="card shadow-sm p-3 heatmap-explain">
                                 <h6 class="mb-2 heatmap-title">¿Cómo leer el mapa de calor (Potencia vs Tiempo)?</h6>
                                 <p class="heatmap-desc">
-                                    Este mapa muestra la potencia asociada a cada carga a lo largo del tiempo. En la vista <b>diaria</b> el eje X representa las 24 horas y el eje Y las cargas; los colores indican la potencia (kW) consumida en esa hora por carga. En la vista <b>mensual</b> el eje X son los meses y los valores representan energía estimada por mes.<br>
+                                    Este mapa muestra la potencia asociada a cada carga a lo largo del tiempo. En la
+                                    vista <b>diaria</b> el eje X representa las 24 horas y el eje Y las cargas; los
+                                    colores indican la potencia (kW) consumida en esa hora por carga. En la vista
+                                    <b>mensual</b> el eje X son los meses y los valores representan energía estimada por
+                                    mes.<br>
                                     <b>Interpretación rápida:</b>
-                                    <ul>
-                                        <li><b>Rojo/Amarillo:</b> Zonas de mayor potencia o energía — posibles picos de demanda.</li>
-                                        <li><b>Azul/Verde:</b> Bajo consumo — horarios seguros o para desplazar cargas.</li>
-                                    </ul>
-                                    Usa el mapa para identificar picos horarios y planificar desplazamiento de cargas o almacenamiento. La barra lateral muestra la escala (kW o kWh según periodo).
+                                <ul>
+                                    <li><b>Rojo/Amarillo:</b> Zonas de mayor potencia o energía — posibles picos de
+                                        demanda.</li>
+                                    <li><b>Azul/Verde:</b> Bajo consumo — horarios seguros o para desplazar cargas.</li>
+                                </ul>
+                                Usa el mapa para identificar picos horarios y planificar desplazamiento de cargas o
+                                almacenamiento. La barra lateral muestra la escala (kW o kWh según periodo).
                                 </p>
                             </div>
                         </div>
@@ -373,7 +424,7 @@
 
     <!-- ALERT CONTAINER handled by JS -->
 
-    
+
 
     <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -388,7 +439,8 @@
     <div class="container py-4">
         <div class="card shadow-sm p-2 mb-4">
             <h5 class="mb-3">🕘 Métricas por perfil horario</h5>
-            <p class="small text-muted">Genera métricas y visualizaciones (LDC, Consumo temporal y mapa de calor) filtradas por perfil horario: Día (06:00-17:59) o Noche (18:00-05:59).</p>
+            <p class="small text-muted">Genera métricas y visualizaciones (LDC, Consumo temporal y mapa de calor)
+                filtradas por perfil horario: Día (06:00-17:59) o Noche (18:00-05:59).</p>
             <div class="d-flex gap-2 align-items-center mb-2">
                 <label class="mb-0">Perfil:</label>
                 <select id="perfilHorarioSelect" class="form-select form-select-sm" style="max-width:180px;">
@@ -442,7 +494,8 @@
 
                             <div class="card p-2">
                                 <h6>Notas</h6>
-                                <p class="small text-muted">Exporta las gráficas combinadas o guarda la preferencia de perfil para futuras sesiones.</p>
+                                <p class="small text-muted">Exporta las gráficas combinadas o guarda la preferencia de
+                                    perfil para futuras sesiones.</p>
                             </div>
                         </div>
                     </div>
@@ -452,110 +505,110 @@
     </div>
 
     <!-- Spinner overlay para generación de perfil -->
-        <div id="profileSpinner" class="profile-spinner-overlay">
-            <div class="profile-spinner">
-                <div class="dot"></div>
-                <div>Generando métricas... por favor espera</div>
-            </div>
+    <div id="profileSpinner" class="profile-spinner-overlay">
+        <div class="profile-spinner">
+            <div class="dot"></div>
+            <div>Generando métricas... por favor espera</div>
         </div>
+    </div>
     <script>
-    // Animación de métricas solares
-    function animateMetrics() {
-        document.querySelectorAll('.solar-metric strong').forEach(el => {
-            el.style.transition = 'transform 0.7s cubic-bezier(.4,1.4,.6,1)';
-            el.style.transform = 'scale(1.25)';
-            setTimeout(() => { el.style.transform = 'scale(1)'; }, 700);
+        // Animación de métricas solares
+        function animateMetrics() {
+            document.querySelectorAll('.solar-metric strong').forEach(el => {
+                el.style.transition = 'transform 0.7s cubic-bezier(.4,1.4,.6,1)';
+                el.style.transform = 'scale(1.25)';
+                setTimeout(() => { el.style.transform = 'scale(1)'; }, 700);
+            });
+        }
+        window.addEventListener('DOMContentLoaded', animateMetrics);
+        // También animar cuando se actualizan métricas
+        const energiaTotal = document.getElementById('energiaTotal');
+        const potenciaMedia = document.getElementById('potenciaMedia');
+        const potenciaPico = document.getElementById('potenciaPico');
+        [energiaTotal, potenciaMedia, potenciaPico].forEach(el => {
+            const observer = new MutationObserver(animateMetrics);
+            observer.observe(el, { childList: true });
         });
-    }
-    window.addEventListener('DOMContentLoaded', animateMetrics);
-    // También animar cuando se actualizan métricas
-    const energiaTotal = document.getElementById('energiaTotal');
-    const potenciaMedia = document.getElementById('potenciaMedia');
-    const potenciaPico = document.getElementById('potenciaPico');
-    [energiaTotal, potenciaMedia, potenciaPico].forEach(el => {
-        const observer = new MutationObserver(animateMetrics);
-        observer.observe(el, { childList: true });
-    });
     </script>
     <script>
-    // Modo oscuro/claro
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    function setTheme(dark) {
-    document.body.classList.toggle('dark-mode', dark);
-    themeIcon.textContent = dark ? '☀️' : '🌙';
-    themeToggle.classList.toggle('btn-dark', dark);
-    themeToggle.classList.toggle('btn-outline-dark', !dark);
-    themeToggle.textContent = '';
-    themeToggle.appendChild(themeIcon);
-    themeToggle.append(' ', dark ? 'Modo claro' : 'Modo oscuro');
-    localStorage.setItem('theme', dark ? 'dark' : 'light');
-    // Disparar evento para actualizar gráficas
-    const event = new Event('classChange');
-    document.body.dispatchEvent(event);
-    }
-    themeToggle.addEventListener('click', () => {
-        setTheme(!document.body.classList.contains('dark-mode'));
-    });
-    // Inicializar según preferencia
-    setTheme(localStorage.getItem('theme') === 'dark');
+        // Modo oscuro/claro
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        function setTheme(dark) {
+            document.body.classList.toggle('dark-mode', dark);
+            themeIcon.textContent = dark ? '☀️' : '🌙';
+            themeToggle.classList.toggle('btn-dark', dark);
+            themeToggle.classList.toggle('btn-outline-dark', !dark);
+            themeToggle.textContent = '';
+            themeToggle.appendChild(themeIcon);
+            themeToggle.append(' ', dark ? 'Modo claro' : 'Modo oscuro');
+            localStorage.setItem('theme', dark ? 'dark' : 'light');
+            // Disparar evento para actualizar gráficas
+            const event = new Event('classChange');
+            document.body.dispatchEvent(event);
+        }
+        themeToggle.addEventListener('click', () => {
+            setTheme(!document.body.classList.contains('dark-mode'));
+        });
+        // Inicializar según preferencia
+        setTheme(localStorage.getItem('theme') === 'dark');
     </script>
 
 
-<!-- =================== CHATBASE =================== -->
-<script>
-(function(){
-  if(!window.chatbase||window.chatbase("getState")!=="initialized"){
-    window.chatbase=(...a)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(a)};
-    window.chatbase=new Proxy(window.chatbase,{get(t,p){if(p==="q"){return t.q}return(...a)=>t(p,...a)}});
-  }
-  const onLoad=function(){
-    const s=document.createElement("script");
-    s.src="https://www.chatbase.co/embed.min.js";
-    s.id="0qDQ0e7YV_kv0sn-cXXlK";
-    s.domain="www.chatbase.co";
-    document.body.appendChild(s);
-  };
-  if(document.readyState==="complete"){onLoad();}
-  else{window.addEventListener("load",onLoad);}
-})();
-</script>
+    <!-- =================== CHATBASE =================== -->
+    <script>
+        (function () {
+            if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+                window.chatbase = (...a) => { if (!window.chatbase.q) { window.chatbase.q = [] } window.chatbase.q.push(a) };
+                window.chatbase = new Proxy(window.chatbase, { get(t, p) { if (p === "q") { return t.q } return (...a) => t(p, ...a) } });
+            }
+            const onLoad = function () {
+                const s = document.createElement("script");
+                s.src = "https://www.chatbase.co/embed.min.js";
+                s.id = "0qDQ0e7YV_kv0sn-cXXlK";
+                s.domain = "www.chatbase.co";
+                document.body.appendChild(s);
+            };
+            if (document.readyState === "complete") { onLoad(); }
+            else { window.addEventListener("load", onLoad); }
+        })();
+    </script>
 
-<!-- Highlight para Chatbase (no modifica el widget) -->
-<div id="chatbaseSpotlight" class="chatbase-spotlight" aria-hidden="true"></div>
-<div id="chatbasePointer" class="chatbase-pointer" aria-hidden="true">¿Necesitas ayuda?</div>
+    <!-- Highlight para Chatbase (no modifica el widget) -->
+    <div id="chatbaseSpotlight" class="chatbase-spotlight" aria-hidden="true"></div>
+    <div id="chatbasePointer" class="chatbase-pointer" aria-hidden="true">¿Necesitas ayuda?</div>
 
-<script>
-// Mostrar halo y pointer solo la primera visita y ocultar en interacción
-(function(){
-  const KEY = 'chatbase_highlight_seen';
-  const seen = localStorage.getItem(KEY) === '1';
-  const halo = document.getElementById('chatbaseSpotlight');
-  const pointer = document.getElementById('chatbasePointer');
-  if (!halo || !pointer) return;
-  function hideAll(){
-    halo.style.display = 'none';
-    pointer.classList.remove('show');
-    pointer.setAttribute('aria-hidden','true');
-    localStorage.setItem(KEY,'1');
-    document.removeEventListener('click', onDocClick, true);
-  }
-  function onDocClick(){ hideAll(); }
-  if (!seen) {
-    // esperar a que Chatbase inserte su burbuja
-    setTimeout(() => {
-      halo.style.display = 'block';
-      pointer.classList.add('show');
-      pointer.setAttribute('aria-hidden','false');
-      // Ocultar al primer click en cualquier parte o tras 9s
-      setTimeout(hideAll, 9000);
-      setTimeout(() => document.addEventListener('click', onDocClick, true), 0);
-    }, 1800);
-  } else {
-    halo.style.display = 'none';
-  }
-})();
-</script>
+    <script>
+        // Mostrar halo y pointer solo la primera visita y ocultar en interacción
+        (function () {
+            const KEY = 'chatbase_highlight_seen';
+            const seen = localStorage.getItem(KEY) === '1';
+            const halo = document.getElementById('chatbaseSpotlight');
+            const pointer = document.getElementById('chatbasePointer');
+            if (!halo || !pointer) return;
+            function hideAll() {
+                halo.style.display = 'none';
+                pointer.classList.remove('show');
+                pointer.setAttribute('aria-hidden', 'true');
+                localStorage.setItem(KEY, '1');
+                document.removeEventListener('click', onDocClick, true);
+            }
+            function onDocClick() { hideAll(); }
+            if (!seen) {
+                // esperar a que Chatbase inserte su burbuja
+                setTimeout(() => {
+                    halo.style.display = 'block';
+                    pointer.classList.add('show');
+                    pointer.setAttribute('aria-hidden', 'false');
+                    // Ocultar al primer click en cualquier parte o tras 9s
+                    setTimeout(hideAll, 9000);
+                    setTimeout(() => document.addEventListener('click', onDocClick, true), 0);
+                }, 1800);
+            } else {
+                halo.style.display = 'none';
+            }
+        })();
+    </script>
 
 
 </body>
