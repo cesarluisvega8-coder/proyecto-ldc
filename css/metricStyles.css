@@ -6,13 +6,17 @@
     background: var(--card-bg);
     border: none;
     overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    padding: 0.5rem;
 }
 
 .solar-metric {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: var(--radius-md);
-    padding: 1.25rem;
+    padding: 0.9rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
@@ -21,6 +25,7 @@
     text-align: center;
     position: relative;
     overflow: hidden;
+    color: #1e293b;
 }
 
 .solar-metric:hover {
@@ -49,19 +54,19 @@
 
 .solar-metric strong {
     font-family: 'Outfit', sans-serif;
-    color: var(--text-main);
-    font-size: 1.75rem;
+    color: #0f172a;
+    font-size: 1.4rem;
     font-weight: 700;
     display: block;
-    margin: 0.25rem 0;
+    margin: 0.2rem 0;
 }
 
 .solar-metric span {
-    color: var(--text-muted);
-    font-size: 0.85rem;
+    color: #475569;
+    font-size: 0.78rem;
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
 }
 
 /* Tab Navigation for Metrics */
@@ -76,9 +81,9 @@
 .nav-link {
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
-    padding: 0.5rem 1.5rem;
+    padding: 0.4rem 1rem;
     border-radius: var(--radius-sm) !important;
     border: none !important;
     transition: all 0.2s ease;
@@ -95,13 +100,13 @@
 }
 
 /* Dark Mode Overrides */
-.dark-mode .solar-metric {
-    background: rgba(30, 41, 59, 0.4);
-    border-color: rgba(255, 255, 255, 0.1);
+.dark-mode .solar-metric,
+.dark-mode .solar-metric * {
+    background: rgba(30, 41, 59, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
 }
 
-.dark-mode .solar-metric strong,
-.dark-mode .solar-metric span,
 .dark-mode .nav-link:not(.active) {
     color: #ffffff !important;
 }

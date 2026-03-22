@@ -368,14 +368,30 @@ h6,
     border-color: #334155;
 }
 
+.dark-mode .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: #f8fafc;
+    --bs-table-border-color: #334155;
+    border-color: #334155 !important;
+}
+
 .dark-mode .table thead th {
-    background: #1e293b;
-    color: #94a3b8;
-    border-bottom-color: #334155;
+    background: #1e293b !important;
+    color: #94a3b8 !important;
+    border-bottom-color: #334155 !important;
+    border-color: #334155 !important;
+}
+
+.dark-mode .table tbody td,
+.dark-mode .table tbody th,
+.dark-mode .table tbody tr {
+    background-color: transparent !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
 }
 
 .dark-mode .table tbody tr:hover {
-    background-color: #334155;
+    background-color: #334155 !important;
 }
 
 .dark-mode .form-control,
