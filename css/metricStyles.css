@@ -96,21 +96,23 @@
 
 /* Dark Mode Overrides */
 .dark-mode .solar-metric {
-    background: #0f172a;
-    border-color: #334155;
+    background: rgba(30, 41, 59, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-.dark-mode .solar-metric strong {
-    color: #fff;
+.dark-mode .solar-metric strong,
+.dark-mode .solar-metric span,
+.dark-mode .nav-link:not(.active) {
+    color: #ffffff !important;
 }
 
 .dark-mode .solar-tabs {
-    background: #0f172a;
+    background: rgba(15, 23, 42, 0.6);
 }
 
 .dark-mode .nav-link.active {
-    background: #1e293b !important;
-    color: #60a5fa !important;
+    background: #ffffff !important;
+    color: #020617 !important;
 }
 
 .solar-divider {
