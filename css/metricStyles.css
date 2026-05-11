@@ -1,131 +1,74 @@
-/* ==========================================================================
-   SOLANLYZE - METRICS DESIGN SYSTEM
-   ========================================================================== */
-
-.metrics-card {
-    background: var(--card-bg);
-    border: none;
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    padding: 0.5rem;
-}
-
+/* Estilos para las métricas */
 .solar-metric {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: var(--radius-md);
-    padding: 0.9rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #fffbe6 60%, #b2f7ef 100%);
+    border: 2px solid #ffe066;
+    border-radius: 1.2rem;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    color: #1b5e20;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.09);
+    transition: all 0.2s ease;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    color: #1e293b;
+    width: 100%;
 }
 
 .solar-metric:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--accent-solar);
-    background: #fff;
-}
-
-.solar-metric::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: var(--accent-solar);
-    opacity: 0.1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67,234,124,0.15);
 }
 
 .solar-metric .solar-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    font-size: 1.4rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
 }
 
 .solar-metric strong {
-    font-family: 'Outfit', sans-serif;
-    color: #0f172a;
-    font-size: 1.4rem;
-    font-weight: 700;
-    display: block;
-    margin: 0.2rem 0;
-}
-
-.solar-metric span {
-    color: #475569;
-    font-size: 0.78rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-}
-
-/* Tab Navigation for Metrics */
-.solar-tabs {
-    background: #f1f5f9;
-    padding: 0.25rem;
-    border-radius: var(--radius-md);
-    border: none !important;
-    display: inline-flex;
-}
-
-.nav-link {
-    font-family: 'Inter', sans-serif;
+    color: #0d6efd;
+    font-size: 1.2rem;
     font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    padding: 0.4rem 1rem;
-    border-radius: var(--radius-sm) !important;
-    border: none !important;
+    margin: 0 0.3rem;
+}
+
+/* Tabs de métricas */
+#metricsTabs {
+    border: none;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+#metricsTabs .nav-link {
+    border: 2px solid transparent;
+    border-radius: 1rem;
+    color: #666;
+    padding: 0.6rem 1.2rem;
+    margin: 0 0.3rem;
+    font-weight: 500;
     transition: all 0.2s ease;
 }
 
-.nav-link:hover {
-    color: var(--text-main);
+#metricsTabs .nav-link:hover {
+    background-color: rgba(255, 224, 102, 0.1);
+    border-color: #ffe066;
 }
 
-.nav-link.active {
-    background: #fff !important;
-    color: var(--accent-solar) !important;
-    box-shadow: var(--shadow-sm);
+#metricsTabs .nav-link.active {
+    background: linear-gradient(90deg, #43ea7c 0%, #ffe066 100%);
+    border-color: #43ea7c;
+    color: #1b5e20;
 }
 
-/* Dark Mode Overrides */
-.dark-mode .solar-metric,
-.dark-mode .solar-metric * {
-    background: rgba(30, 41, 59, 0.4) !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    color: #ffffff !important;
+/* Responsive grid for metric items */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
 }
 
-.dark-mode .nav-link:not(.active) {
-    color: #ffffff !important;
-}
-
-.dark-mode .solar-tabs {
-    background: rgba(15, 23, 42, 0.6);
-}
-
-.dark-mode .nav-link.active {
-    background: #ffffff !important;
-    color: #020617 !important;
-}
-
-.solar-divider {
-    height: 2px;
-    background: linear-gradient(to right, transparent, #e2e8f0, transparent);
-    margin: 2rem 0;
-}
-
-.dark-mode .solar-divider {
-    background: linear-gradient(to right, transparent, #334155, transparent);
+@media (min-width: 1200px) {
+    .metrics-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }

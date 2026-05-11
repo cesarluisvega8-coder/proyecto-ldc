@@ -342,45 +342,24 @@ window.addEventListener('DOMContentLoaded', () => {
                         return y+rowHeight;
                     }
 
-                    // Render filas (mostrar todos los registros con salto de página dinámico)
+                    // Render filas (mostrar hasta 30 registros en el PDF)
                     yPos = dibujarEncabezadoTabla(yPos);
                     const allRows = (window.datosManuales||[]);
-                    
-                    allRows.forEach((d,i)=>{
+                    const totalRows = allRows.length;
+                    const maxRows = 30; // Mostrar hasta 30 registros
+                    const rows = allRows.slice(0, maxRows);
+                    if(totalRows > maxRows){
+                        pdf.setFontSize(8); pdf.setFont(undefined,'normal'); pdf.setTextColor(120,120,120);
+                        pdf.text(`Mostrando ${maxRows} de ${totalRows} registros.`, margin, yPos + 5);
+                        yPos += 8; // Reducir el espacio de la nota
+                        pdf.setFontSize(9); pdf.setTextColor(...colors.text); pdf.setFont(undefined,'normal');
+                    }
+                    rows.forEach((d,i)=>{
                         let x=margin+2;
                         const rangosTexto = Array.isArray(d.Rangos) && d.Rangos.length>0 ? d.Rangos.map(r=>`${r.inicio}-${r.fin}h`).join(', ') : (d.HoraInicio!=null?`${d.HoraInicio}-${d.HoraFin}h`:'-');
                         const fila=[ String(i+1), d.Carga||'-', Number(d.Potencia_W||0).toFixed(0), parseInt(d.HorasEncendido||0), Number(d.Energia_kWh||0).toFixed(2), rangosTexto ];
-                        
-                        let maxLines = 1;
-                        const rowTexts = fila.map((cell, idx) => {
-                            const text = String(cell);
-                            const maxW = colWidths[idx] - 3;
-                            const lines = pdf.splitTextToSize(text, maxW);
-                            if (lines.length > maxLines) maxLines = lines.length;
-                            return lines;
-                        });
-                        
-                        let currentFH = Math.max(rowHeight, maxLines * 4.5 + 2);
-                        
-                        if (yPos + currentFH > pageHeight - margin - 15) {
-                            currentPage++;
-                            pdf.addPage();
-                            agregarEncabezado(currentPage);
-                            yPos = margin + 20;
-                            // Redibujar encabezado de tabla
-                            yPos = dibujarEncabezadoTabla(yPos);
-                            // Restaurar tipografía de cuerpo de la tabla
-                            pdf.setFontSize(9);
-                            pdf.setTextColor(...colors.text);
-                            pdf.setFont(undefined, 'normal');
-                        }
-                        
-                        rowTexts.forEach((lines, idx) => {
-                            pdf.text(lines, x, yPos + 5);
-                            x += colWidths[idx];
-                        });
-                        
-                        yPos += currentFH;
+                        fila.forEach((cell,idx)=>{ const text=String(cell); const maxW=colWidths[idx]-3; const lines=pdf.splitTextToSize(text, maxW); pdf.text(lines[0], x, yPos+5); x+=colWidths[idx]; });
+                        yPos += rowHeight;
                     });
 
                     // Nueva página: LDC
